@@ -46,3 +46,4 @@ Besides this basic setup a store has serveral abilities to tweak the behaviour:
 - data flow management with rules
 - store-composition
 - [granual control for useState hook](./use-state.md)
+- [type-safe](./type-save.md)
