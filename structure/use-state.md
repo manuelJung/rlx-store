@@ -11,9 +11,9 @@ const myState = store.useState() // resolves whole store
 `useState` allows an callback argument to resolve (and listen) to only a fraction of the state:
 
 ```javascript
-const myState = store.useState(state => ({
+const myState = store.useState((state, memo) => ({
   foo: state.foo,
-  bar: state.bar,
+  bar: memo(() => 1 +2, [state.foo, state.bar]),
 }))
 ```
 
