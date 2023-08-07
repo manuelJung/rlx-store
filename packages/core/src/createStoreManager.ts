@@ -1,4 +1,5 @@
 import * as t from './types'
+import { createEventContainer } from './utils'
 
 export default function createStoreManager (args:t.FactoryArgs, managers:t.Managers) {
   const db = new Map<string, t.StoreContainer>()
@@ -13,6 +14,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
           state: config.state,
           numParents: 0,
           subscriptions: [],
+          events: createEventContainer(),
           store: args.injectFramework({
             name: config.name,
             key: config.key,

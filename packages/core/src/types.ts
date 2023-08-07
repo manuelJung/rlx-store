@@ -1,11 +1,15 @@
 import createEffectManager from "./createEffectManager"
 import createStoreManager from "./createStoreManager"
-import { createEventContainer } from "./effect/utils"
+import { EffectEvent } from "./events/effect"
+import { GlobalEvent } from "./events/gobal"
+import { StoreEvent } from "./events/store"
+import { createEventContainer } from "./utils"
 
 
 export type Managers = {
   store: ReturnType<typeof createStoreManager>
   effect: ReturnType<typeof createEffectManager>
+  events: ReturnType<typeof createEventContainer<GlobalEvent>>
 }
 
 export type FactoryArgs = {
@@ -36,6 +40,7 @@ export type StoreContainer = {
   store: Store
   state: any
   numParents: number
+  events: ReturnType<typeof createEventContainer<StoreEvent>>
   subscriptions: ((state:any)=>void)[]
 }
 
@@ -50,7 +55,7 @@ export type EffectContainer = {
   effect: Effect
   active: boolean
   dropped: boolean
-  events: ReturnType<typeof createEventContainer>
+  events: ReturnType<typeof createEventContainer<EffectEvent>>
   // runningSaga: null
   // parentContext: null | EffectContainer
   // subEffectContextCounter: number
