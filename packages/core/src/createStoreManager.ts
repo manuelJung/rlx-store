@@ -17,6 +17,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
             name: config.name,
             key: config.key,
             getState: () => container.state,
+            sideEffect: effect => managers.effect.register(effect, container),
             subscribe: cb => {
               container.subscriptions.push(cb)
               return () => {

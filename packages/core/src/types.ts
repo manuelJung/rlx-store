@@ -1,5 +1,6 @@
 import createEffectManager from "./createEffectManager"
 import createStoreManager from "./createStoreManager"
+import { createEventContainer } from "./effect/utils"
 
 
 export type Managers = {
@@ -27,6 +28,7 @@ export type Store = {
   key?: string
   getState: () => any
   subscribe: (cb:(state:any)=>void) => () => void
+  sideEffect: (effect:Effect) => void
 }
 
 export type StoreContainer = {
@@ -41,4 +43,34 @@ export type Action = {
   type: string
   meta: any[],
   payload: any
+}
+
+export type EffectContainer = {
+  id: string
+  effect: Effect
+  active: boolean
+  dropped: boolean
+  events: ReturnType<typeof createEventContainer>
+  // runningSaga: null
+  // parentContext: null | EffectContainer
+  // subEffectContextCounter: number
+  // subEffectContexts: [],
+  // concurrency: {},
+  // publicContext: {
+  //   global: {},
+  //   addWhen: {},
+  //   addUntil: {}
+  // }
+}
+
+export type Effect = {
+  id: string
+  target: string | string[]
+  output?: string | string[]
+}
+
+export type ActiveEffects = {
+  BEFORE: Record<string, EffectContainer[]>
+  INSTEAD: Record<string, EffectContainer[]>
+  AFTER: Record<string, EffectContainer[]>
 }
