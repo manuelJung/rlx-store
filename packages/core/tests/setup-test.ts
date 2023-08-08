@@ -15,13 +15,30 @@ export default function setupTest (config:Config={}) {
     onMount: mountFn
   })
 
+  /**
+   * mocks
+   */
+  createStore.managers.effect.dispatch = jest.fn(createStore.managers.effect.dispatch)
+  createStore.managers.effect.register = jest.fn(createStore.managers.effect.register)
+  createStore.managers.events.trigger = jest.fn(createStore.managers.events.trigger)
+
+  createStore.managers.events.on('REGISTER_STORE', ({container}) => {
+    container.events.trigger = jest.fn(container.events.trigger)
+    container.store.subscribe = jest.fn(container.store.subscribe)
+  })
+
+  createStore.managers.events.on('REGISTER_EFFECT', ({container}) => {
+    container.events.trigger = jest.fn(container.events.trigger)
+    container.effect.consequence = jest.fn(container.effect.consequence)
+  })
+
   return {
-    createStore,
-    createPartialStore: (config:Partial<t.StoreConfig>) => createStore({
+    createStore: (config:Partial<t.StoreConfig>) => createStore({
       name: 'test-store',
       actions: {},
-      state: null
-    }),
-    managers: createStore.managers
+      state: null,
+      ...config,
+    }) as ReturnType<typeof createStore> & Record<string, (...args:any[]) => any>,
+    managers: createStore.managers,
   }
 }

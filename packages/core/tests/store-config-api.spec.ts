@@ -6,13 +6,13 @@ describe('store api', () => {
   describe('name', () => {
     it('acts as id for store-db', () => {
       const c = setupTest()
-      c.createPartialStore({name: 'my-name'})
+      c.createStore({name: 'my-name'})
       expect(c.managers.store.db.has('my-name')).toBeTruthy()
     })
 
     it('is propagated to store as "name"', () => {
       const c = setupTest()
-      c.createPartialStore({name: 'my-name'})
+      c.createStore({name: 'my-name'})
       const container = c.managers.store.db.get('my-name')
       if(!container) throw new Error('no container found')
       expect(container.store.name).toBe('my-name')
@@ -20,28 +20,24 @@ describe('store api', () => {
 
     it('creates a totally new store instance when value changes', () => {
       const c = setupTest()
-      let mountCounter = 0
-      c.managers.events.on('REGISTER_STORE', () => mountCounter++)
-      c.createPartialStore({name: 'my-name'})
-      c.createPartialStore({name: 'my-name'})
-      c.createPartialStore({name: 'other-name'})
-      expect(mountCounter).toBe(2)
+      const store1 = c.createStore({name: 'my-name'})
+      const store2 = c.createStore({name: 'my-name'})
+      const store3 = c.createStore({name: 'other-name'})
+      expect(store1).toBe(store2)
+      expect(store2).not.toBe(store3)
+      expect(c.managers.store.db.has('my-name')).toBeTruthy()
+      expect(c.managers.store.db.has('other-name')).toBeTruthy()
     })
     
     it('acts as prefix for each actiontype', () => {
       const c = setupTest()
-      const store = c.createPartialStore({
+      const store = c.createStore({
         name: 'my-name',
-        actions: {
-          test: () => () => null
-        }
+        actions: { test: () => () => null }
       })
-      const fn = (store as any).test as () => t.Action | null
-      const dispatch = jest.fn(c.managers.effect.dispatch)
-      c.managers.effect.dispatch = dispatch
-      const action = fn()
+      const action = store.test()
       expect(action?.type).toBe('my-name/test')
-      expect(dispatch).toBeCalledWith({type:'my-name/test', meta: [], payload: undefined})
+      expect(c.managers.effect.dispatch).toBeCalledWith({type:'my-name/test', meta: [], payload: undefined})
     })
   })
 

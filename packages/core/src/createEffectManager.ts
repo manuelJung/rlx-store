@@ -19,6 +19,7 @@ export default function createEffectManager (args:t.FactoryArgs, managers:t.Mana
       if(db.has(id)) return
       const container = createEffectContainer(effect, db, activeEffects, storeContainer)
       db.set(id, container)
+      managers.events.trigger({type:'REGISTER_EFFECT', container})
       startAddWhenSaga(container)
     },
     dispatch: (action:t.Action, cb:()=>void) => dispatchEvent(action, activeEffects, cb)
