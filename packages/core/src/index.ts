@@ -13,8 +13,15 @@ export default function createStoreFactory (args:t.FactoryArgs) {
   managers.store = createStoreManager(args, managers)
   managers.effect = createEffectManager(args, managers)
 
-  return function createStore (storeConfig:t.StoreConfig) {
+  function createStore (storeConfig:t.StoreConfig) {
     const store = managers.store.create(storeConfig)
     return store
   }
+
+  if(process.env.NODE_ENV === 'TEST') {
+    // @ts-ignore
+    createStore.managers = managers
+  }
+
+  return createStore
 }

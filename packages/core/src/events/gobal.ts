@@ -1,7 +1,8 @@
+import * as t from '../types'
 
-export type GlobalTestEvent1 = {
-  type: 'GLOBAL_TEST_EVENT_1'
-  payload: number
+export type GlobalRegisterStoreEvent = {
+  type: 'REGISTER_STORE'
+  container: t.StoreContainer
 }
 
 export type GlobalTestEvent2 = {
@@ -9,5 +10,5 @@ export type GlobalTestEvent2 = {
 }
 
 export type GlobalEvent =
-| GlobalTestEvent1
+| GlobalRegisterStoreEvent
 | GlobalTestEvent2

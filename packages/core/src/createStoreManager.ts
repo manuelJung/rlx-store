@@ -6,6 +6,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
   let keyCounter = 1
 
   return {
+    db,
     create: (config:t.StoreConfig) => {
       const storeId = config.name + (config.key ?? args.getInstanceId(() => `${keyCounter++}`))
       const container = db.get(storeId) ?? (() => {
@@ -38,10 +39,11 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
               payload: args[0],
             }
 
-            managers.effect.dispatch(action, () => {
+            const result = managers.effect.dispatch(action, () => {
               const updateFn = config.actions[key](...args)
               container.state = updateFn(container.state)
             })
+            return result
           }
         }
 
@@ -52,6 +54,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
             meta: [],
             payload: null
           }, () => null)
+          container.events.trigger({type: 'MOUNT'})
         })
 
         args.onDestroy(() => {
@@ -69,6 +72,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
         })
 
         db.set(storeId, container)
+        managers.events.trigger({type: 'REGISTER_STORE', container})
         return container
       })()
 

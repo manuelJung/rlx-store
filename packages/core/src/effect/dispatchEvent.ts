@@ -34,6 +34,10 @@ export default function dispatchEvent (action:t.Action, activeEffects:t.ActiveEf
   forEachRuleContext(activeEffects, action.type, 'INSTEAD', container => {
     if(actionExecution.canceled) return
   })
+
+  if(actionExecution.canceled) return null
+
+  return actionExecution.action
 }
 
 const forEachRuleContext = (

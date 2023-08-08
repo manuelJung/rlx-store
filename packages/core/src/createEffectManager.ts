@@ -12,6 +12,8 @@ export default function createEffectManager (args:t.FactoryArgs, managers:t.Mana
   }
 
   return {
+    db,
+    activeEffects,
     register: (effect:t.Effect, storeContainer?:t.StoreContainer) => {
       const id = effect.id + (storeContainer?.id ?? '')
       if(db.has(id)) return
