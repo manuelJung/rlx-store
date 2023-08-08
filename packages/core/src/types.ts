@@ -54,8 +54,10 @@ export type EffectContainer = {
   id: string
   effect: Effect
   active: boolean
-  dropped: boolean
   events: ReturnType<typeof createEventContainer<EffectEvent>>
+  effectDb: Map<string, EffectContainer>
+  activeEffects: ActiveEffects
+  storeContainer: StoreContainer | null
   // runningSaga: null
   // parentContext: null | EffectContainer
   // subEffectContextCounter: number
@@ -79,3 +81,13 @@ export type ActiveEffects = {
   INSTEAD: Record<string, EffectContainer[]>
   AFTER: Record<string, EffectContainer[]>
 }
+
+export type ActionExecution = {
+  execId: number
+  ruleExecId: number
+  canceled: boolean
+  history: [],
+  action: Action
+}
+
+export type EffectPosition = 'BEFORE' | 'INSTEAD' | 'AFTER'
