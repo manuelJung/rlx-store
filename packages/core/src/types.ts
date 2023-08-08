@@ -72,6 +72,8 @@ export type EffectContainer = {
 
 export type Effect = {
   id: string
+  weight?: number
+  position?: EffectPosition
   target: string | string[]
   output?: string | string[]
 }

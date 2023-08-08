@@ -1,13 +1,17 @@
 
-export type EffectTestEvent1 = {
-  type: 'EFFECT_TEST_EVENT_1'
-  payload: number
+export type EffectActiveEvent = {
+  type: 'ACTIVATE'
 }
 
-export type EffectTestEvent2 = {
-  type: 'EFFECT_TEST_EVENT_2'
+export type EffectDeactiveEvent = {
+  type: 'DEACTIVATE'
+}
+
+export type EffectDestroyEvent = {
+  type: 'DESTROY'
 }
 
 export type EffectEvent =
-| EffectTestEvent1
-| EffectTestEvent2
+| EffectActiveEvent
+| EffectDeactiveEvent
+| EffectDestroyEvent
