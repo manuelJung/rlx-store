@@ -1,7 +1,6 @@
 
-export type StoreTestEvent1 = {
-  type: 'STORE_TEST_EVENT_1'
-  payload: number
+export type StoreDestroyEvent = {
+  type: 'DESTROY'
 }
 
 export type StoreTestEvent2 = {
@@ -9,5 +8,5 @@ export type StoreTestEvent2 = {
 }
 
 export type StoreEvent =
-| StoreTestEvent1
+| StoreDestroyEvent
 | StoreTestEvent2

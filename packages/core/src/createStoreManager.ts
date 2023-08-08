@@ -63,6 +63,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
           }, () => null)
 
           if(container.numParents === 0 && !config.persist) {
+            container.events.trigger({type: 'DESTROY'})
             db.delete(storeId)
           }
         })

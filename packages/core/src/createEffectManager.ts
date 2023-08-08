@@ -1,3 +1,4 @@
+import dispatchEvent from './effect/dispatchEvent'
 import { startAddWhenSaga } from './effect/saga'
 import { createEffectContainer } from './effect/utils'
 import * as t from './types'
@@ -14,16 +15,10 @@ export default function createEffectManager (args:t.FactoryArgs, managers:t.Mana
     register: (effect:t.Effect, storeContainer?:t.StoreContainer) => {
       const id = effect.id + (storeContainer?.id ?? '')
       if(db.has(id)) return
-      const container = createEffectContainer(effect)
+      const container = createEffectContainer(effect, db, activeEffects, storeContainer)
       db.set(id, container)
       startAddWhenSaga(container)
-
-      if(storeContainer) {
-        // TODO
-      }
     },
-    dispatch: (action:t.Action, cb:()=>void) => {
-
-    }
+    dispatch: (action:t.Action, cb:()=>void) => dispatchEvent(action, activeEffects, cb)
   }
 }
