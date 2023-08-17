@@ -15,6 +15,12 @@ export function createEffectContainer (
     storeContainer: storeContainer ?? null,
     effectDb,
     activeEffects,
+    concurrency: {},
+    publicContext: {
+      addUntil: {},
+      addWhen: {},
+      global: {},
+    }
     // runningSaga: null,
     // parentContext: null,
     // subRuleContextCounter: 0,

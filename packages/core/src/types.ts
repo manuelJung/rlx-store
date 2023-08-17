@@ -44,9 +44,15 @@ export type StoreContainer = {
   subscriptions: ((state:any)=>void)[]
 }
 
+export type CTX = {
+  set: (key:string, value:unknown) => unknown,
+  get: (key:string) => unknown
+}
+
 export type Action = {
   type: string
   meta: any[],
+  skipRule?: string | string[]
   payload: any
 }
 
@@ -58,6 +64,15 @@ export type EffectContainer = {
   effectDb: Map<string, EffectContainer>
   activeEffects: ActiveEffects
   storeContainer: StoreContainer | null
+  concurrency: {[name:string]:{
+    running: number,
+    debounceTimeoutId: null | number
+  }},
+  publicContext: {
+    global: {[key:string]:unknown},
+    addWhen: {[key:string]:unknown},
+    addUntil: {[key:string]:unknown}
+  },
   // runningSaga: null
   // parentContext: null | EffectContainer
   // subEffectContextCounter: number
@@ -72,11 +87,17 @@ export type EffectContainer = {
 
 export type Effect = {
   id: string
+  target: string | string[]
+  consequence: (action:Action) => Action | Promise<Action> | void
+  condition?: (action:Action) => Boolean
   weight?: number
   position?: EffectPosition
-  target: string | string[]
   output?: string | string[]
-  consequence: (action:Action) => Action | Promise<Action> | void
+  concurrency?: 'DEFAULT' | 'FIRST' | 'LAST' | 'ONCE' | 'SWITCH'
+  concurrencyFilter?: (action:Action) => string
+  onExecute?: 'REMOVE_RULE' | 'RECREATE_RULE'
+  throttle?: number
+  debounce?: number
 }
 
 export type ActiveEffects = {
@@ -91,6 +112,12 @@ export type ActionExecution = {
   canceled: boolean
   history: [],
   action: Action
+}
+
+export type EffectExecution = {
+  execId: number
+  concurrencyId: string,
+  actionExecId: number
 }
 
 export type EffectPosition = 'BEFORE' | 'INSTEAD' | 'AFTER'
