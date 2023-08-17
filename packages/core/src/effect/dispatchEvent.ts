@@ -1,5 +1,5 @@
 import * as t from '../types'
-import { getCurrentConsequenceExecId } from './consequence'
+import consequence, { getCurrentConsequenceExecId } from './consequence'
 
 const cycle = {
   waiting: false,
@@ -33,9 +33,20 @@ export default function dispatchEvent (action:t.Action, activeEffects:t.ActiveEf
 
   forEachRuleContext(activeEffects, action.type, 'INSTEAD', container => {
     if(actionExecution.canceled) return
+    consequence(actionExecution, container)
   })
 
   if(actionExecution.canceled) return null
+
+  forEachRuleContext(activeEffects, action.type, 'BEFORE', container => {
+    consequence(actionExecution, container)
+  })
+
+  cb(action)
+
+  forEachRuleContext(activeEffects, action.type, 'AFTER', container => {
+    consequence(actionExecution, container)
+  })
 
   return actionExecution.action
 }
@@ -47,9 +58,8 @@ const forEachRuleContext = (
   cb:(container:t.EffectContainer)=>void
 ) => {
   const targetList = activateEffects[position][target]
-  let i = 0
 
   if(targetList) {
-    for (i=0; i<targetList.length; i++) cb(targetList[i])
+    for (let i=0; i<targetList.length; i++) cb(targetList[i])
   }
 }

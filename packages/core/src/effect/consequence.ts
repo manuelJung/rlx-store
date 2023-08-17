@@ -8,5 +8,5 @@ export default function consequence (
   actionExecution: t.ActionExecution,
   container: t.EffectContainer,
 ) {
-
+  container.effect.consequence(actionExecution.action)
 }

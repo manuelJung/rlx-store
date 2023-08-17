@@ -76,7 +76,7 @@ export type Effect = {
   position?: EffectPosition
   target: string | string[]
   output?: string | string[]
-  consequence: () => Action | Promise<Action> | void
+  consequence: (action:Action) => Action | Promise<Action> | void
 }
 
 export type ActiveEffects = {
