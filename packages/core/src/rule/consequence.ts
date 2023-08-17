@@ -1,12 +1,13 @@
 import * as t from '../types'
 
 let execId = 1
-let wrappedExecIds = []
+let wrappedExecIds:number[] = []
 export const getCurrentConsequenceExecId = () => wrappedExecIds[wrappedExecIds.length-1] || null
 
 export default function consequence (
   actionExecution: t.ActionExecution,
   container: t.RuleContainer,
+  dispatch: (action:t.Action) => void
 ) {
   const action = actionExecution.action
   const rule = container.rule
@@ -93,8 +94,8 @@ export default function consequence (
   }
   // skip if rule condition does not match
   if(rule.condition){
-    // const args = setup.createConditionArgs({context})
-    if(!rule.condition(action, /*args*/)){
+    const args:t.ConditionArgs = { action }
+    if(!rule.condition(args)){
       return endConsequence('CONDITION_NOT_MATCHED')
     }
   }
@@ -124,13 +125,105 @@ export default function consequence (
   /**
    * Execute consequence
    */
-  let result
+  let result:any
   let canceled = false
-  let status
+  let status:'CANCELED'|'REMOVED'|null = null
   const cancel = () => {canceled = true}
   const wasCanceled = () => canceled
+  const effect = fn => {
+    if(canceled) return
+    rule.concurrency === 'SWITCH' && container.events.trigger({
+      type: 'CANCEL_CONSEQUENCE',
+      ruleExecution,
+      logic: 'SWITCH'
+    })
+    wrappedExecIds.push(ruleExecution.execId)
+    fn()
+    wrappedExecIds.pop()
+  }
+  const consequenceArgs:t.ConsequenceArgs = { action, wasCanceled, effect }
 
-  rule.consequence(action)
+  // run the thing
+  if(rule.throttle || rule.delay || rule.debounce){
+    result = new Promise(resolve => {
+      if(rule.debounce && concurrency.debounceTimeoutId) clearTimeout(concurrency.debounceTimeoutId)
+      concurrency.debounceTimeoutId = setTimeout(() => {
+        concurrency.debounceTimeoutId = null
+        if(canceled) return resolve(null)
+        resolve(rule.consequence(consequenceArgs))
+      }, rule.throttle || rule.delay || rule.debounce)
+    })
+  }
+  else {
+    result = rule.consequence(consequenceArgs)
+  }
+
+
+  /**
+   * setup unlisten
+   */
+  function unlisten () {
+    rule.concurrency !== 'ONCE' && concurrency.running--
+    offRemoveRule()
+    offCancel()
+    container.events.trigger({
+      type: 'CONSEQUENCE_END',
+      actionExecution,
+      ruleExecution,
+      logic: status ?? 'RESOLVED',
+    })
+  }
+
+  /**
+   * Handle return types
+   */
+  const handleConsequenceReturn = (result:any) => {
+    effect(() => dispatch(result))
+  }
+
+  // position:INSTEAD can extend the action if type is equal
+  if(typeof result === 'object' && result !== null && result.type && rule.position === 'INSTEAD' && result.type === action.type){
+    unlisten()
+    return {resolved:true, action:result}
+  }
+
+  // dispatch returned action
+  else if(typeof result === 'object' && result !== null && result.type){
+    handleConsequenceReturn(result)
+    unlisten()
+  }
+
+  // dispatch returned (promise-wrapped) action
+  else if(typeof result === 'object' && result !== null && result.then){
+    // $FlowFixMe
+    result.then(action => {
+      action && action.type && handleConsequenceReturn(action)
+      unlisten()
+    })
+  }
+
+  // register unlisten callback
+  else if(typeof result === 'function'){
+    const offRemoveRule = container.events.once('DEACTIVATE', () => {
+      result()
+      offCancel()
+      unlisten()
+    })
+    const offCancel = container.events.once('CANCEL_CONSEQUENCE', evt => {
+      if(evt.ruleExecution.concurrencyId !== ruleExecution.concurrencyId) return
+      if(evt.ruleExecution.execId === ruleExecution.execId) return
+      offRemoveRule()
+      result()
+      unlisten()
+    })
+  }
+
+  // unlisten for void return
+  else {
+    unlisten()
+  }
+
+  return {resolved:true}
 }
 
 function matchGlob(id:string, glob:string | string[]):boolean{

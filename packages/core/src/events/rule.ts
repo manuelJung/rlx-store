@@ -22,7 +22,7 @@ export type RuleConsequenceEndEvent = {
   type: 'CONSEQUENCE_END',
   ruleExecution: t.RuleExecution
   actionExecution: t.ActionExecution
-  logic: 'SKIP'|'CONDITION_NOT_MATCHED'
+  logic: 'SKIP' | 'CONDITION_NOT_MATCHED' | "CANCELED" | "REMOVED" | "RESOLVED"
 }
 
 export type RuleConsequenceCancelEvent = {

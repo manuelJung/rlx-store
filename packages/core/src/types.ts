@@ -66,7 +66,7 @@ export type RuleContainer = {
   storeContainer: StoreContainer | null
   concurrency: {[name:string]:{
     running: number,
-    debounceTimeoutId: null | number
+    debounceTimeoutId: null | ReturnType<typeof setTimeout>
   }},
   publicContext: {
     global: {[key:string]:unknown},
@@ -85,11 +85,21 @@ export type RuleContainer = {
   // }
 }
 
+export type ConditionArgs = {
+  action: Action
+}
+
+export type ConsequenceArgs = {
+  action: Action
+  wasCanceled: () => boolean
+  effect: (fn:(...args:any[])=>void) => void
+}
+
 export type Rule = {
   id: string
   target: string | string[]
-  consequence: (action:Action) => Action | Promise<Action> | void
-  condition?: (action:Action) => Boolean
+  consequence: (args:ConsequenceArgs) => Action | Promise<Action> | void
+  condition?: (args:ConditionArgs) => Boolean
   weight?: number
   position?: RulePosition
   output?: string | string[]
@@ -98,6 +108,7 @@ export type Rule = {
   onExecute?: 'REMOVE_RULE' | 'RECREATE_RULE'
   throttle?: number
   debounce?: number
+  delay?: number
 }
 
 export type ActiveRules = {
@@ -108,7 +119,7 @@ export type ActiveRules = {
 
 export type ActionExecution = {
   execId: number
-  ruleExecId: number
+  ruleExecId: number | null
   canceled: boolean
   history: [],
   action: Action

@@ -33,19 +33,19 @@ export default function dispatchEvent (action:t.Action, activeRules:t.ActiveRule
 
   forEachRuleContext(activeRules, action.type, 'INSTEAD', container => {
     if(actionExecution.canceled) return
-    consequence(actionExecution, container)
+    consequence(actionExecution, container, action => dispatchEvent(action, activeRules, cb))
   })
 
   if(actionExecution.canceled) return null
 
   forEachRuleContext(activeRules, action.type, 'BEFORE', container => {
-    consequence(actionExecution, container)
+    consequence(actionExecution, container, action => dispatchEvent(action, activeRules, cb))
   })
 
   cb(action)
 
   forEachRuleContext(activeRules, action.type, 'AFTER', container => {
-    consequence(actionExecution, container)
+    consequence(actionExecution, container, action => dispatchEvent(action, activeRules, cb))
   })
 
   return actionExecution.action
