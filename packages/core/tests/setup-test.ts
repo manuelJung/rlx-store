@@ -10,7 +10,7 @@ export default function setupTest (config:Config={}) {
   const mountFn = jest.fn().mockImplementation(cb => cb())
   const createStore = factory({
     injectFramework: store => store,
-    getInstanceId: () => config.instanceId ?? '1',
+    getInstanceId: () => config.instanceId ?? '',
     onDestroy: destroyFn,
     onMount: mountFn
   })

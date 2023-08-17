@@ -18,7 +18,7 @@ export default function createStoreFactory (args:t.FactoryArgs) {
     return store
   }
 
-  if(process.env.NODE_ENV === 'TEST') {
+  if(process.env.NODE_ENV === 'test') {
     // @ts-ignore
     createStore.managers = managers
   }

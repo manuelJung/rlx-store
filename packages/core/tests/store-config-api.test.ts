@@ -3,13 +3,13 @@ import setupTest from "./setup-test"
 
 describe('store api', () => {
   describe('name', () => {
-    it.skip('acts as id for store-db', () => {
+    it('acts as id for store-db', () => {
       const c = setupTest()
       c.createStore({name: 'my-name'})
       expect(c.managers.store.db.has('my-name')).toBeTruthy()
     })
 
-    it.skip('is propagated to store as "name"', () => {
+    it('is propagated to store as "name"', () => {
       const c = setupTest()
       c.createStore({name: 'my-name'})
       const container = c.managers.store.db.get('my-name')
@@ -17,7 +17,7 @@ describe('store api', () => {
       expect(container.store.name).toBe('my-name')
     })
 
-    it.skip('creates a totally new store instance when value changes', () => {
+    it('creates a totally new store instance when value changes', () => {
       const c = setupTest()
       const store1 = c.createStore({name: 'my-name'})
       const store2 = c.createStore({name: 'my-name'})
@@ -28,7 +28,7 @@ describe('store api', () => {
       expect(c.managers.store.db.has('other-name')).toBeTruthy()
     })
     
-    it.skip('acts as prefix for each actiontype', () => {
+    it('acts as prefix for each actiontype', () => {
       const c = setupTest()
       const store = c.createStore({
         name: 'my-name',
@@ -36,7 +36,10 @@ describe('store api', () => {
       })
       const action = store.test()
       expect(action?.type).toBe('my-name/test')
-      expect(c.managers.effect.dispatch).toBeCalledWith({type:'my-name/test', meta: [], payload: undefined})
+      expect(c.managers.effect.dispatch).toBeCalledWith(
+        {type:'my-name/test', meta: [], payload: undefined}, 
+        expect.anything(),
+      )
     })
   })
 
