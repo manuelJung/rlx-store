@@ -18,8 +18,8 @@ export default function setupTest (config:Config={}) {
   /**
    * mocks
    */
-  createStore.managers.effect.dispatch = jest.fn(createStore.managers.effect.dispatch)
-  createStore.managers.effect.register = jest.fn(createStore.managers.effect.register)
+  createStore.managers.rule.dispatch = jest.fn(createStore.managers.rule.dispatch)
+  createStore.managers.rule.register = jest.fn(createStore.managers.rule.register)
   createStore.managers.events.trigger = jest.fn(createStore.managers.events.trigger)
 
   createStore.managers.events.on('REGISTER_STORE', ({container}) => {
@@ -27,9 +27,9 @@ export default function setupTest (config:Config={}) {
     container.store.subscribe = jest.fn(container.store.subscribe)
   })
 
-  createStore.managers.events.on('REGISTER_EFFECT', ({container}) => {
+  createStore.managers.events.on('REGISTER_RULE', ({container}) => {
     container.events.trigger = jest.fn(container.events.trigger)
-    container.effect.consequence = jest.fn(container.effect.consequence)
+    container.rule.consequence = jest.fn(container.rule.consequence)
   })
 
   return {

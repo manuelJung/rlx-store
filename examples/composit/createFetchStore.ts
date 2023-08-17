@@ -30,13 +30,13 @@ export default function createFetchStore<T, F = void, O = void>(config:any) {
     }
   })
 
-  store.sideEffect({
+  store.addRule({
     name: 'fetch',
     target: '/fetchRequest',
     effect: (action, store) => config.fetchFn(action.payload).then(store.fetchSuccess, store.fetchFailure)
   })
 
-  store.sideEffect({
+  store.addRule({
     name: 'setup',
     target: '/@init',
     condition: () => !config.preventInitialFetch,

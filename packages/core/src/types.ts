@@ -1,6 +1,6 @@
-import createEffectManager from "./createEffectManager"
+import createRuleManager from "./createRuleManager"
 import createStoreManager from "./createStoreManager"
-import { EffectEvent } from "./events/effect"
+import { RuleEvent } from "./events/rule"
 import { GlobalEvent } from "./events/gobal"
 import { StoreEvent } from "./events/store"
 import { createEventContainer } from "./utils"
@@ -8,7 +8,7 @@ import { createEventContainer } from "./utils"
 
 export type Managers = {
   store: ReturnType<typeof createStoreManager>
-  effect: ReturnType<typeof createEffectManager>
+  rule: ReturnType<typeof createRuleManager>
   events: ReturnType<typeof createEventContainer<GlobalEvent>>
 }
 
@@ -32,7 +32,7 @@ export type Store = {
   key?: string
   getState: () => any
   subscribe: (cb:(state:any)=>void) => () => void
-  sideEffect: (effect:Effect) => void
+  addRule: (rule:Rule) => void
 }
 
 export type StoreContainer = {
@@ -56,13 +56,13 @@ export type Action = {
   payload: any
 }
 
-export type EffectContainer = {
+export type RuleContainer = {
   id: string
-  effect: Effect
+  rule: Rule
   active: boolean
-  events: ReturnType<typeof createEventContainer<EffectEvent>>
-  effectDb: Map<string, EffectContainer>
-  activeEffects: ActiveEffects
+  events: ReturnType<typeof createEventContainer<RuleEvent>>
+  ruleDb: Map<string, RuleContainer>
+  activeRules: ActiveRules
   storeContainer: StoreContainer | null
   concurrency: {[name:string]:{
     running: number,
@@ -74,9 +74,9 @@ export type EffectContainer = {
     addUntil: {[key:string]:unknown}
   },
   // runningSaga: null
-  // parentContext: null | EffectContainer
-  // subEffectContextCounter: number
-  // subEffectContexts: [],
+  // parentContext: null | RuleContainer
+  // subRuleContextCounter: number
+  // subRuleContexts: [],
   // concurrency: {},
   // publicContext: {
   //   global: {},
@@ -85,13 +85,13 @@ export type EffectContainer = {
   // }
 }
 
-export type Effect = {
+export type Rule = {
   id: string
   target: string | string[]
   consequence: (action:Action) => Action | Promise<Action> | void
   condition?: (action:Action) => Boolean
   weight?: number
-  position?: EffectPosition
+  position?: RulePosition
   output?: string | string[]
   concurrency?: 'DEFAULT' | 'FIRST' | 'LAST' | 'ONCE' | 'SWITCH'
   concurrencyFilter?: (action:Action) => string
@@ -100,10 +100,10 @@ export type Effect = {
   debounce?: number
 }
 
-export type ActiveEffects = {
-  BEFORE: Record<string, EffectContainer[]>
-  INSTEAD: Record<string, EffectContainer[]>
-  AFTER: Record<string, EffectContainer[]>
+export type ActiveRules = {
+  BEFORE: Record<string, RuleContainer[]>
+  INSTEAD: Record<string, RuleContainer[]>
+  AFTER: Record<string, RuleContainer[]>
 }
 
 export type ActionExecution = {
@@ -114,10 +114,10 @@ export type ActionExecution = {
   action: Action
 }
 
-export type EffectExecution = {
+export type RuleExecution = {
   execId: number
   concurrencyId: string,
   actionExecId: number
 }
 
-export type EffectPosition = 'BEFORE' | 'INSTEAD' | 'AFTER'
+export type RulePosition = 'BEFORE' | 'INSTEAD' | 'AFTER'

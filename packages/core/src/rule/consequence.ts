@@ -6,13 +6,13 @@ export const getCurrentConsequenceExecId = () => wrappedExecIds[wrappedExecIds.l
 
 export default function consequence (
   actionExecution: t.ActionExecution,
-  container: t.EffectContainer,
+  container: t.RuleContainer,
 ) {
   const action = actionExecution.action
-  const effect = container.effect
+  const rule = container.rule
 
   // setup concurrency
-  const concurrencyId = effect.concurrencyFilter ? effect.concurrencyFilter(action) : 'default'
+  const concurrencyId = rule.concurrencyFilter ? rule.concurrencyFilter(action) : 'default'
   if(!container.concurrency[concurrencyId]){
     container.concurrency[concurrencyId] = {
       running: 0,
@@ -25,11 +25,11 @@ export default function consequence (
   // so we totally ignore all futher consequence executions until the rule is removed
   if(concurrency.running){
     // TODO: what happens when position === INSTEAD. will actionExecution be canceled?
-    if(effect.onExecute === 'REMOVE_RULE' || effect.onExecute === 'RECREATE_RULE') return {resolved:false}
+    if(rule.onExecute === 'REMOVE_RULE' || rule.onExecute === 'RECREATE_RULE') return {resolved:false}
   }
 
-  // setup effectExecution
-  const effectExecution:t.EffectExecution = {
+  // setup ruleExecution
+  const ruleExecution:t.RuleExecution = {
     execId: execId++,
     concurrencyId: concurrencyId,
     actionExecId: actionExecution.execId
@@ -37,13 +37,13 @@ export default function consequence (
 
   container.events.trigger({
     type: 'CONSEQUENCE_START',
-    effectExecution,
+    ruleExecution,
     actionExecution,
   })
   concurrency.running++
 
   const context:t.CTX = {
-    set: () => {throw new Error('you cannot call setContext within a consequence or condition. check effect '+ effect.id)},
+    set: () => {throw new Error('you cannot call setContext within a consequence or condition. check rule '+ rule.id)},
     get: (name:string) => container.publicContext.addUntil[name] 
     || container.publicContext.addWhen[name]
     || container.publicContext.global[name]
@@ -59,7 +59,7 @@ export default function consequence (
     container.events.trigger({
       type: 'CONSEQUENCE_END',
       actionExecution,
-      effectExecution,
+      ruleExecution,
       logic,
     })
     return {resolved:false}
@@ -67,34 +67,34 @@ export default function consequence (
 
   if(concurrency.running-1 > 0){
     // skip when concurrency matches
-    if(effect.concurrency === 'ONCE') return endConsequence('SKIP')
-    if(effect.concurrency === 'FIRST') return endConsequence('SKIP')
+    if(rule.concurrency === 'ONCE') return endConsequence('SKIP')
+    if(rule.concurrency === 'FIRST') return endConsequence('SKIP')
     // cancel previous consequences
-    if(effect.concurrency === 'LAST') container.events.trigger({
+    if(rule.concurrency === 'LAST') container.events.trigger({
       type: 'CANCEL_CONSEQUENCE',
-      effectExecution,
+      ruleExecution,
       logic: 'LAST'
     })
-    if(effect.throttle) container.events.trigger({
+    if(rule.throttle) container.events.trigger({
       type: 'CANCEL_CONSEQUENCE',
-      effectExecution,
+      ruleExecution,
       logic: 'THROTTLE'
     })
-    if(effect.debounce) container.events.trigger({
+    if(rule.debounce) container.events.trigger({
       type: 'CANCEL_CONSEQUENCE',
-      effectExecution,
+      ruleExecution,
       logic: 'DEBOUNCE'
     })
   }
 
   // skip if 'skipRule' condition matched
-  if(action.meta && action.skipRule && matchGlob(effect.id, action.skipRule)){
+  if(action.meta && action.skipRule && matchGlob(rule.id, action.skipRule)){
     return endConsequence('SKIP')
   }
   // skip if rule condition does not match
-  if(effect.condition){
+  if(rule.condition){
     // const args = setup.createConditionArgs({context})
-    if(!effect.condition(action, /*args*/)){
+    if(!rule.condition(action, /*args*/)){
       return endConsequence('CONDITION_NOT_MATCHED')
     }
   }
@@ -105,10 +105,10 @@ export default function consequence (
 
   // later consequences can cancel this execution
   const offCancel = container.events.on('CANCEL_CONSEQUENCE', evt => {
-    if(evt.effectExecution.concurrencyId !== effectExecution.concurrencyId) return
-    if(evt.effectExecution.execId === effectExecution.execId) return
+    if(evt.ruleExecution.concurrencyId !== ruleExecution.concurrencyId) return
+    if(evt.ruleExecution.execId === ruleExecution.execId) return
     // only cancel prev executions for switch
-    if(evt.logic === 'SWITCH' && evt.effectExecution.execId < effectExecution.execId){
+    if(evt.logic === 'SWITCH' && evt.ruleExecution.execId < ruleExecution.execId){
       return
     }
     cancel()
@@ -130,7 +130,7 @@ export default function consequence (
   const cancel = () => {canceled = true}
   const wasCanceled = () => canceled
 
-  effect.consequence(action)
+  rule.consequence(action)
 }
 
 function matchGlob(id:string, glob:string | string[]):boolean{

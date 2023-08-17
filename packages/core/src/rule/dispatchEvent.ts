@@ -8,7 +8,7 @@ const cycle = {
 
 let execId = 1
 
-export default function dispatchEvent (action:t.Action, activeEffects:t.ActiveEffects, cb:(action:t.Action)=>void) {
+export default function dispatchEvent (action:t.Action, activeRules:t.ActiveRules, cb:(action:t.Action)=>void) {
   // detect endless recursive loops
   if(process.env.NODE_ENV !== 'production'){
     let next = fn => setTimeout(fn,1)
@@ -31,20 +31,20 @@ export default function dispatchEvent (action:t.Action, activeEffects:t.ActiveEf
     action: action
   }
 
-  forEachRuleContext(activeEffects, action.type, 'INSTEAD', container => {
+  forEachRuleContext(activeRules, action.type, 'INSTEAD', container => {
     if(actionExecution.canceled) return
     consequence(actionExecution, container)
   })
 
   if(actionExecution.canceled) return null
 
-  forEachRuleContext(activeEffects, action.type, 'BEFORE', container => {
+  forEachRuleContext(activeRules, action.type, 'BEFORE', container => {
     consequence(actionExecution, container)
   })
 
   cb(action)
 
-  forEachRuleContext(activeEffects, action.type, 'AFTER', container => {
+  forEachRuleContext(activeRules, action.type, 'AFTER', container => {
     consequence(actionExecution, container)
   })
 
@@ -52,12 +52,12 @@ export default function dispatchEvent (action:t.Action, activeEffects:t.ActiveEf
 }
 
 const forEachRuleContext = (
-  activateEffects:t.ActiveEffects, 
+  activateRules:t.ActiveRules, 
   target:string, 
-  position:t.EffectPosition, 
-  cb:(container:t.EffectContainer)=>void
+  position:t.RulePosition, 
+  cb:(container:t.RuleContainer)=>void
 ) => {
-  const targetList = activateEffects[position][target]
+  const targetList = activateRules[position][target]
 
   if(targetList) {
     for (let i=0; i<targetList.length; i++) cb(targetList[i])

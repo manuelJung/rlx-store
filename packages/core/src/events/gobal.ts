@@ -5,11 +5,11 @@ export type GlobalRegisterStoreEvent = {
   container: t.StoreContainer
 }
 
-export type GlobalRegisterEffectEvent = {
-  type: 'REGISTER_EFFECT'
-  container: t.EffectContainer
+export type GlobalRegisterRuleEvent = {
+  type: 'REGISTER_RULE'
+  container: t.RuleContainer
 }
 
 export type GlobalEvent =
 | GlobalRegisterStoreEvent
-| GlobalRegisterEffectEvent
+| GlobalRegisterRuleEvent

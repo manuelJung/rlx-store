@@ -36,7 +36,7 @@ describe('store api', () => {
       })
       const action = store.test()
       expect(action?.type).toBe('my-name/test')
-      expect(c.managers.effect.dispatch).toBeCalledWith(
+      expect(c.managers.rule.dispatch).toBeCalledWith(
         {type:'my-name/test', meta: [], payload: undefined}, 
         expect.anything(),
       )

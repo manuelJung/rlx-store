@@ -21,7 +21,7 @@ type Action = {
 This action can then be used by effects:
 
 ```javascript
-store.sideEffect({
+store.addRule({
   name: 'log',
   target: '/increment', // or 'counter/increment'
   // action will be infered

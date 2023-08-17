@@ -11,7 +11,7 @@ describe('effect', () => {
         myAction: (id:string) => state => state
       }
     })
-    store.sideEffect({
+    store.addRule({
       id: 'effect',
       target: 'test/myAction',
       consequence: consequence,

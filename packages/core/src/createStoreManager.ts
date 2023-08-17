@@ -20,7 +20,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
             name: config.name,
             key: config.key,
             getState: () => container.state,
-            sideEffect: effect => managers.effect.register(effect, container),
+            addRule: rule => managers.rule.register(rule, container),
             subscribe: cb => {
               container.subscriptions.push(cb)
               return () => {
@@ -39,7 +39,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
               payload: args[0],
             }
 
-            const result = managers.effect.dispatch(action, () => {
+            const result = managers.rule.dispatch(action, () => {
               const updateFn = config.actions[key](...args)
               container.state = updateFn(container.state)
             })
@@ -49,7 +49,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
 
         args.onMount(() => {
           container.numParents++
-          managers.effect.dispatch({
+          managers.rule.dispatch({
             type: config.name + '/@mount',
             meta: [],
             payload: null
@@ -59,7 +59,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
 
         args.onDestroy(() => {
           container.numParents--
-          managers.effect.dispatch({
+          managers.rule.dispatch({
             type: config.name + '/@destroy',
             meta: [],
             payload: null
