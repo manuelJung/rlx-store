@@ -18,14 +18,36 @@ describe('effect', () => {
     })
 
     store.myAction('foo')
-    expect(consequence).toBeCalledWith({
-      type: 'test/myAction',
-      meta: ['foo'],
-      payload: 'foo',
-    })
+    expect(consequence).toBeCalledWith(expect.objectContaining({
+      action: {
+        type: 'test/myAction',
+        meta: ['foo'],
+        payload: 'foo',
+      }
+    }))
   })
 
-  it.todo('dispatches actions that are returned in consequence')
+  it('can dispatch action in consequence', () => {
+    const c = setupTest()
+    const store = c.createStore({
+      name: 'test',
+      actions: {
+        myAction: (id:string) => state => state,
+        otherAction: (id:string) => state => state,
+      }
+    })
+    store.myAction = jest.fn(store.myAction)
+    store.otherAction = jest.fn(store.otherAction)
+    store.addRule({
+      id: 'effect',
+      target: 'test/myAction',
+      consequence: ({store}) => store.otherAction('bar'),
+    })
+
+    store.myAction('foo')
+    expect(store.myAction).toBeCalledWith('foo')
+    expect(store.otherAction).toBeCalledWith('bar')
+  })
 
   it.todo('dispatches actions that are resolved in consequence')
 })

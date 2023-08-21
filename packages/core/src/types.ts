@@ -37,7 +37,7 @@ export type Store = {
 
 export type StoreContainer = {
   id: string
-  store: Store
+  store: Store & Record<string, any>
   state: any
   numParents: number
   events: ReturnType<typeof createEventContainer<StoreEvent>>
@@ -91,6 +91,7 @@ export type ConditionArgs = {
 
 export type ConsequenceArgs = {
   action: Action
+  store: Store & Record<string, any>
   wasCanceled: () => boolean
   effect: (fn:(...args:any[])=>void) => void
 }
@@ -98,7 +99,7 @@ export type ConsequenceArgs = {
 export type Rule = {
   id: string
   target: string | string[]
-  consequence: (args:ConsequenceArgs) => Action | Promise<Action> | void
+  consequence: (args:ConsequenceArgs) => Promise<void> | void
   condition?: (args:ConditionArgs) => Boolean
   weight?: number
   position?: RulePosition
@@ -121,8 +122,10 @@ export type ActionExecution = {
   execId: number
   ruleExecId: number | null
   canceled: boolean
-  history: [],
+  history: []
   action: Action
+  storeContainer: StoreContainer
+  cb: (...args:any[]) => any
 }
 
 export type RuleExecution = {

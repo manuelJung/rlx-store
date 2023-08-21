@@ -7,7 +7,6 @@ export const getCurrentConsequenceExecId = () => wrappedExecIds[wrappedExecIds.l
 export default function consequence (
   actionExecution: t.ActionExecution,
   container: t.RuleContainer,
-  dispatch: (action:t.Action) => void
 ) {
   const action = actionExecution.action
   const rule = container.rule
@@ -141,7 +140,12 @@ export default function consequence (
     fn()
     wrappedExecIds.pop()
   }
-  const consequenceArgs:t.ConsequenceArgs = { action, wasCanceled, effect }
+  const consequenceArgs:t.ConsequenceArgs = { 
+    action, 
+    wasCanceled, 
+    effect,
+    store: actionExecution.storeContainer.store,
+  }
 
   // run the thing
   if(rule.throttle || rule.delay || rule.debounce){
@@ -177,9 +181,6 @@ export default function consequence (
   /**
    * Handle return types
    */
-  const handleConsequenceReturn = (result:any) => {
-    effect(() => dispatch(result))
-  }
 
   // position:INSTEAD can extend the action if type is equal
   if(typeof result === 'object' && result !== null && result.type && rule.position === 'INSTEAD' && result.type === action.type){
@@ -189,7 +190,6 @@ export default function consequence (
 
   // dispatch returned action
   else if(typeof result === 'object' && result !== null && result.type){
-    handleConsequenceReturn(result)
     unlisten()
   }
 
@@ -197,7 +197,6 @@ export default function consequence (
   else if(typeof result === 'object' && result !== null && result.then){
     // $FlowFixMe
     result.then(action => {
-      action && action.type && handleConsequenceReturn(action)
       unlisten()
     })
   }

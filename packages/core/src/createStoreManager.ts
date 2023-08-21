@@ -39,31 +39,43 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
               payload: args[0],
             }
 
-            const result = managers.rule.dispatch(action, () => {
-              const updateFn = config.actions[key](...args)
-              container.state = updateFn(container.state)
-            })
+            const result = managers.rule.dispatch(
+              action, 
+              () => {
+                const updateFn = config.actions[key](...args)
+                container.state = updateFn(container.state)
+              },
+              container
+            )
             return result
           }
         }
 
         args.onMount(() => {
           container.numParents++
-          managers.rule.dispatch({
-            type: config.name + '/@mount',
-            meta: [],
-            payload: null
-          }, () => null)
+          managers.rule.dispatch(
+            {
+              type: config.name + '/@mount',
+              meta: [],
+              payload: null
+            }, 
+            () => null,
+            container,
+          )
           container.events.trigger({type: 'MOUNT'})
         })
 
         args.onDestroy(() => {
           container.numParents--
-          managers.rule.dispatch({
-            type: config.name + '/@destroy',
-            meta: [],
-            payload: null
-          }, () => null)
+          managers.rule.dispatch(
+            {
+              type: config.name + '/@destroy',
+              meta: [],
+              payload: null
+            }, 
+            () => null, 
+            container
+          )
 
           if(container.numParents === 0 && !config.persist) {
             container.events.trigger({type: 'DESTROY'})

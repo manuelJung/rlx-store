@@ -39,6 +39,7 @@ describe('store api', () => {
       expect(c.managers.rule.dispatch).toBeCalledWith(
         {type:'my-name/test', meta: [], payload: undefined}, 
         expect.anything(),
+        expect.anything(),
       )
     })
   })
