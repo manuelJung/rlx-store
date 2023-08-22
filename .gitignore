@@ -1,1 +1,8 @@
 packages-idea
+
+# turborepo
+.turbo
+
+# node
+node_modules
+**/node_modules
