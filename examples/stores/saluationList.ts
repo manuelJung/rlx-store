@@ -1,4 +1,4 @@
-import createFetchStore from "../composit/createFetchStore"
+import createFetchStore from "examples/composit/createFetchStore"
 
 export type Salutation = {
   id: string

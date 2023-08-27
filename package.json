@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/manuelJung/rlx-store#readme",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ],
   "packageManager": "yarn@1.22.4",
   "devDependencies": {
