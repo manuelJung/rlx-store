@@ -38,14 +38,14 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
               meta: args,
               payload: args[0],
             }
-
             const result = managers.rule.dispatch(
               action, 
+              container,
+              db,
               () => {
                 const updateFn = config.actions[key](...args)
                 container.state = updateFn(container.state)
               },
-              container
             )
             return result
           }
@@ -59,8 +59,9 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
               meta: [],
               payload: null
             }, 
-            () => null,
             container,
+            db,
+            () => null,
           )
           container.events.trigger({type: 'MOUNT'})
         })
@@ -73,8 +74,9 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
               meta: [],
               payload: null
             }, 
+            container,
+            db,
             () => null, 
-            container
           )
 
           if(container.numParents === 0 && !config.persist) {

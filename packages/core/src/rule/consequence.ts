@@ -7,6 +7,7 @@ export const getCurrentConsequenceExecId = () => wrappedExecIds[wrappedExecIds.l
 export default function consequence (
   actionExecution: t.ActionExecution,
   container: t.RuleContainer,
+  storeDb: Map<string,t.StoreContainer>,
 ) {
   const action = actionExecution.action
   const rule = container.rule
@@ -145,6 +146,19 @@ export default function consequence (
     wasCanceled, 
     effect,
     store: actionExecution.storeContainer.store,
+    getStore: (name, key) => {
+      for(const container of storeDb.values()) {
+        if(container.store.id === name && container.store.key === key) return container.store
+      }
+      return null
+    },
+    getStores: name => {
+      const stores:t.Store[] = []
+      for(const container of storeDb.values()) {
+        if(container.store.id === name) stores.push(container.store)
+      }
+      return stores
+    }
   }
 
   // run the thing

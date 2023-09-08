@@ -13,6 +13,7 @@ export default function dispatchEvent (
   activeRules:t.ActiveRules, 
   cb:(action:t.Action)=>void,
   storeContainer: t.StoreContainer,
+  storeDb: Map<string,t.StoreContainer>,
 ) {
   // detect endless recursive loops
   if(process.env.NODE_ENV !== 'production'){
@@ -40,19 +41,19 @@ export default function dispatchEvent (
 
   forEachRuleContext(activeRules, action.type, 'INSTEAD', container => {
     if(actionExecution.canceled) return
-    consequence(actionExecution, container)
+    consequence(actionExecution, container, storeDb)
   })
 
   if(actionExecution.canceled) return null
 
   forEachRuleContext(activeRules, action.type, 'BEFORE', container => {
-    consequence(actionExecution, container)
+    consequence(actionExecution, container, storeDb)
   })
 
   cb(action)
 
   forEachRuleContext(activeRules, action.type, 'AFTER', container => {
-    consequence(actionExecution, container)
+    consequence(actionExecution, container, storeDb)
   })
 
   return actionExecution.action
