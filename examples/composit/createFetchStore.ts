@@ -1,4 +1,4 @@
-import createStore from "../react/createStore"
+import createStore from "examples/react/createStore"
 
 export default function createFetchStore<T, F = void, O = void>(config:any) {
   const store = createStore({

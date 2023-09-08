@@ -1,6 +1,6 @@
 import createStoreFactory from '../../core/src'
 import React from 'react'
-
+import x from '@rlx/core'
 
 export default createStoreFactory({
   injectFramework: store => ({
