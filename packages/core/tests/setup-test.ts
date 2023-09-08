@@ -3,16 +3,21 @@ import factory from '../src/index'
 
 type Config = {
   instanceId?: string
+  preventAutoMount?: boolean
 }
 
 export default function setupTest (config:Config={}) {
-  const destroyFn = jest.fn().mockImplementation(cb => cb())
-  const mountFn = jest.fn().mockImplementation(cb => cb())
+  let mountFn = () => {}
+  let destroyFn = () => {}
   const createStore = factory({
     injectFramework: store => store,
     getInstanceId: () => config.instanceId ?? '',
-    onDestroy: destroyFn,
-    onMount: mountFn
+    onDestroy: cb => {
+      destroyFn = () => cb()
+    },
+    onMount: cb => {
+      mountFn = () => cb()
+    }
   })
 
   /**
@@ -33,12 +38,20 @@ export default function setupTest (config:Config={}) {
   })
 
   return {
-    createStore: (config:Partial<t.StoreConfig>) => createStore({
-      name: 'test-store',
-      actions: {},
-      state: null,
-      ...config,
-    }) as ReturnType<typeof createStore> & Record<string, (...args:any[]) => any>,
+    createStore: (storeConfig:Partial<t.StoreConfig>) => {
+      const store = createStore({
+        name: 'test-store',
+        actions: {},
+        state: null,
+        ...storeConfig,
+      }) as ReturnType<typeof createStore> & Record<string, (...args:any[]) => any>
+
+      if(!config.preventAutoMount) mountFn()
+
+      return store
+    },
+    mountFn,
+    destroyFn,
     managers: createStore.managers,
   }
 }

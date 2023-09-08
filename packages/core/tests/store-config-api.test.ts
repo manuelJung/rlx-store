@@ -40,6 +40,7 @@ describe('store api', () => {
         {type:'my-name/test', meta: [], payload: undefined}, 
         expect.anything(),
         expect.anything(),
+        expect.anything(),
       )
     })
   })

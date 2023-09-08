@@ -28,7 +28,6 @@ export default function createRuleManager (args:t.FactoryArgs, managers:t.Manage
       storeDb: Map<string,t.StoreContainer>,
       cb:()=>void, 
     ) => {
-      console.log(action)
       return dispatchEvent(action, activeRules, cb, storeContainer, storeDb)
     }
   }
