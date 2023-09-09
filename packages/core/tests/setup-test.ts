@@ -7,18 +7,20 @@ type Config = {
 }
 
 export default function setupTest (config:Config={}) {
-  let mountFn = () => {}
-  let destroyFn = () => {}
+  let mountFnRef = {
+    current: () => {}
+  }
+  let destroyFnRef = {
+    current: () => {}
+  }
   const createStore = factory({
     injectFramework: store => store,
     getInstanceId: () => config.instanceId ?? '',
     onDestroy: cb => {
-      destroyFn = () => cb()
+      destroyFnRef.current = () => cb()
     },
     onMount: cb => {
-      mountFn = () => {
-        cb()
-      }
+      mountFnRef.current = () => cb()
     }
   })
 
@@ -48,12 +50,12 @@ export default function setupTest (config:Config={}) {
         ...storeConfig,
       }) as ReturnType<typeof createStore> & Record<string, (...args:any[]) => any>
 
-      if(!config.preventAutoMount) mountFn()
+      if(!config.preventAutoMount) mountFnRef.current()
 
       return store
     },
-    mountFn,
-    destroyFn,
+    mountFnRef,
+    destroyFnRef,
     managers: createStore.managers,
   }
 }

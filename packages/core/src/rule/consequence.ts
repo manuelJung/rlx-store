@@ -43,11 +43,25 @@ export default function consequence (
   })
   concurrency.running++
 
-  const context:t.CTX = {
-    set: () => {throw new Error('you cannot call setContext within a consequence or condition. check rule '+ rule.id)},
-    get: (name:string) => container.publicContext.addUntil[name] 
-    || container.publicContext.addWhen[name]
-    || container.publicContext.global[name]
+  // const context:t.CTX = {
+  //   set: () => {throw new Error('you cannot call setContext within a consequence or condition. check rule '+ rule.id)},
+  //   get: (name:string) => container.publicContext.addUntil[name] 
+  //   || container.publicContext.addWhen[name]
+  //   || container.publicContext.global[name]
+  // }
+
+  const getStore = (name:string, key:string) => {
+    for(const container of storeDb.values()) {
+      if(container.store.id === name && container.store.key === key) return container.store
+    }
+    return null
+  }
+  const getStores = (name:string) => {
+    const stores:t.Store[] = []
+    for(const container of storeDb.values()) {
+      if(container.store.id === name) stores.push(container.store)
+    }
+    return stores
   }
 
   /**
@@ -94,7 +108,12 @@ export default function consequence (
   }
   // skip if rule condition does not match
   if(rule.condition){
-    const args:t.ConditionArgs = { action }
+    const args:t.ConditionArgs = { 
+      action,
+      store: actionExecution.storeContainer.store,
+      getStore,
+      getStores,
+    }
     if(!rule.condition(args)){
       return endConsequence('CONDITION_NOT_MATCHED')
     }
@@ -146,19 +165,8 @@ export default function consequence (
     wasCanceled, 
     effect,
     store: actionExecution.storeContainer.store,
-    getStore: (name, key) => {
-      for(const container of storeDb.values()) {
-        if(container.store.id === name && container.store.key === key) return container.store
-      }
-      return null
-    },
-    getStores: name => {
-      const stores:t.Store[] = []
-      for(const container of storeDb.values()) {
-        if(container.store.id === name) stores.push(container.store)
-      }
-      return stores
-    }
+    getStore,
+    getStores,
   }
 
   // run the thing

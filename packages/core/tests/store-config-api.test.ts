@@ -3,7 +3,7 @@ import setupTest from "./setup-test"
 
 describe('store api', () => {
   describe('general', () => {
-    it.skip('dispatches @mount action when store mounts', () => {
+    it('dispatches @mount action when store mounts', () => {
       const c = setupTest({preventAutoMount:true})
       c.createStore({name: 'my-name'})
 
@@ -14,7 +14,7 @@ describe('store api', () => {
         expect.anything(),
       )
 
-      c.mountFn()
+      c.mountFnRef.current()
 
       expect(c.managers.rule.dispatch).toBeCalledWith(
         {type: 'my-name/@mount', meta: [], payload: null},
@@ -24,7 +24,20 @@ describe('store api', () => {
       )
     })
 
-    it.todo('dispatches @destroy action when store unmounts')
+    it('dispatches @destroy action when store unmounts', () => {
+      const c = setupTest()
+      c.createStore({name: 'my-name'})
+
+      expect(c.managers.store.db.has('my-name')).toBeTruthy()
+      c.destroyFnRef.current()
+      expect(c.managers.rule.dispatch).toBeCalledWith(
+        {type: 'my-name/@destroy', meta: [], payload: null},
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+      )
+      expect(c.managers.store.db.has('my-name')).toBeFalsy()
+    })
 
     it.todo('will no dispatch @destroy when at least one store reference is active')
   })
@@ -170,8 +183,20 @@ describe('store api', () => {
   })
 
   describe('persist', () => {
-    it.todo('prevents store from destroying when last parent unmounts')
+    it('prevents store from destroying when last parent unmounts', () => {
+      const c = setupTest()
+      c.createStore({name: 'my-name', persist: true})
 
-    it.todo('let store unmount when value is false|undefined')
+      c.destroyFnRef.current()
+      expect(c.managers.store.db.has('my-name')).toBeTruthy()
+    })
+
+    it('let store unmount when value is false|undefined', () => {
+      const c = setupTest()
+      c.createStore({name: 'my-name', persist: false})
+
+      c.destroyFnRef.current()
+      expect(c.managers.store.db.has('my-name')).toBeFalsy()
+    })
   })
 })
