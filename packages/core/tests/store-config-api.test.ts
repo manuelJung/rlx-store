@@ -3,7 +3,26 @@ import setupTest from "./setup-test"
 
 describe('store api', () => {
   describe('general', () => {
-    it.todo('dispatches @mount action when store mounts')
+    it.skip('dispatches @mount action when store mounts', () => {
+      const c = setupTest({preventAutoMount:true})
+      c.createStore({name: 'my-name'})
+
+      expect(c.managers.rule.dispatch).not.toBeCalledWith(
+        {type: 'my-name/@mount', meta: [], payload: null},
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+      )
+
+      c.mountFn()
+
+      expect(c.managers.rule.dispatch).toBeCalledWith(
+        {type: 'my-name/@mount', meta: [], payload: null},
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+      )
+    })
 
     it.todo('dispatches @destroy action when store unmounts')
 

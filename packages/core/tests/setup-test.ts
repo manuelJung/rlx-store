@@ -16,7 +16,9 @@ export default function setupTest (config:Config={}) {
       destroyFn = () => cb()
     },
     onMount: cb => {
-      mountFn = () => cb()
+      mountFn = () => {
+        cb()
+      }
     }
   })
 
