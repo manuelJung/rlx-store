@@ -108,3 +108,19 @@ function pushByWeight (list:t.RuleContainer[], container:t.RuleContainer) {
   if(prev) list.push(prev)
   else list.push(container)
 }
+
+/**
+ * extends rule target by storeName when target starts with "/"
+ */
+export function updateRuleTarget (rule:t.Rule, storeName:string):t.Rule {
+  if(typeof rule.target === 'string') {
+    if(rule.target[0] === '/') rule.target = storeName + rule.target
+  }
+  else {
+    for(let i=0;i<rule.target.length;i++) {
+      if(rule.target[i][0] === '/') rule.target[i] = storeName + rule.target[i]
+    }
+  }
+
+  return rule
+}

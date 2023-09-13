@@ -1,6 +1,6 @@
 import dispatchEvent from './rule/dispatchEvent'
 import { startAddWhenSaga } from './rule/saga'
-import { createRuleContainer } from './rule/utils'
+import { createRuleContainer, updateRuleTarget } from './rule/utils'
 import * as t from './types'
 
 export default function createRuleManager (args:t.FactoryArgs, managers:t.Managers) {
@@ -17,6 +17,7 @@ export default function createRuleManager (args:t.FactoryArgs, managers:t.Manage
     register: (rule:t.Rule, storeContainer?:t.StoreContainer) => {
       const id = rule.id + (storeContainer?.id ?? '')
       if(db.has(id)) return
+      if(storeContainer) updateRuleTarget(rule, storeContainer.store.name)
       const container = createRuleContainer(rule, db, activeRules, storeContainer)
       db.set(id, container)
       managers.events.trigger({type:'REGISTER_RULE', container})
