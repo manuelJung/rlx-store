@@ -104,7 +104,7 @@ export type ConsequenceArgs = {
 export type Rule = {
   id: string
   target: string | string[]
-  consequence: (args:ConsequenceArgs) => Promise<void> | void
+  consequence: (args:ConsequenceArgs) => Promise<void> | void | Action | Promise<Action>
   condition?: (args:ConditionArgs) => Boolean
   weight?: number
   position?: RulePosition

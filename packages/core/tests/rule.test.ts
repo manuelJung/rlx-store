@@ -86,5 +86,34 @@ describe('rule', () => {
     }))
   })
 
+  it('can manipulate actions by returning action', () => {
+    const c = setupTest()
+    const store = c.createStore({
+      name: 'test',
+      actions: {
+        myAction: (id:string) => state => state
+      }
+    })
+
+    store.addRule({
+      id: 'test',
+      target: 'test/myAction',
+      position: 'INSTEAD',
+      consequence: args => ({
+        ...args.action,
+        meta: ['bar'],
+        payload: 'bar'
+      })
+    })
+
+    const action = store.myAction('foo')
+
+    expect(action).toEqual({
+      type: 'test/myAction',
+      meta: ['bar'],
+      payload: 'bar'
+    })
+  })
+
   
 })
