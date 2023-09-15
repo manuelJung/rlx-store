@@ -44,7 +44,6 @@ export default function dispatchEvent (
     const result = consequence(actionExecution, container, storeDb)
     if(result.action) actionExecution.action = result.action
     else if(result.resolved) actionExecution.canceled = true
-    console.log(result)
   })
 
   if(actionExecution.canceled) return null
