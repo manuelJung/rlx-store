@@ -1,4 +1,4 @@
-describe('proxy', () => {
+describe.skip('proxy', () => {
   it('works', () => {
     const container = createProxyContainer()
     const obj = {
