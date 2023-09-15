@@ -1,4 +1,5 @@
 import * as t from '../types'
+import { destroyRule } from './utils'
 
 let execId = 1
 let wrappedExecIds:number[] = []
@@ -182,6 +183,10 @@ export default function consequence (
   }
   else {
     result = rule.consequence(consequenceArgs)
+  }
+
+  if(rule.onExecute === 'REMOVE_RULE') {
+    destroyRule(container)
   }
 
 
