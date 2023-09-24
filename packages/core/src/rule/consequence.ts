@@ -34,7 +34,8 @@ export default function consequence (
   const ruleExecution:t.RuleExecution = {
     execId: execId++,
     concurrencyId: concurrencyId,
-    actionExecId: actionExecution.execId
+    actionExecId: actionExecution.execId,
+    canceled: false,
   }
 
   container.events.trigger({
@@ -53,7 +54,10 @@ export default function consequence (
 
   const getStore = (name:string, key:string) => {
     for(const container of storeDb.values()) {
-      if(container.store.id === name && container.store.key === key) return container.store
+      if(container.store.id === name && container.store.key === key) return {
+        ...container.store,
+        ruleExecution,
+      } satisfies t.Store
     }
     return null
   }
@@ -62,7 +66,7 @@ export default function consequence (
     for(const container of storeDb.values()) {
       if(container.store.id === name) stores.push(container.store)
     }
-    return stores
+    return stores.map(store => ({...store, ruleExecution}) satisfies t.Store)
   }
 
   /**
@@ -111,7 +115,10 @@ export default function consequence (
   if(rule.condition){
     const args:t.ConditionArgs = { 
       action,
-      store: actionExecution.storeContainer.store,
+      store: {
+        ...actionExecution.storeContainer.store,
+        actionExecution,
+      },
       getStore,
       getStores,
     }
@@ -146,12 +153,11 @@ export default function consequence (
    * Execute consequence
    */
   let result:any
-  let canceled = false
   let status:'CANCELED'|'REMOVED'|null = null
-  const cancel = () => {canceled = true}
-  const wasCanceled = () => canceled
+  const cancel = () => {ruleExecution.canceled = true}
+  const wasCanceled = () => ruleExecution.canceled
   const effect = fn => {
-    if(canceled) return
+    if(ruleExecution.canceled) return
     rule.concurrency === 'SWITCH' && container.events.trigger({
       type: 'CANCEL_CONSEQUENCE',
       ruleExecution,
@@ -165,7 +171,10 @@ export default function consequence (
     action, 
     wasCanceled, 
     effect,
-    store: actionExecution.storeContainer.store,
+    store: {
+      ...actionExecution.storeContainer.store,
+      ruleExecution,
+    } satisfies t.Store,
     getStore,
     getStores,
   }
@@ -176,7 +185,7 @@ export default function consequence (
       if(rule.debounce && concurrency.debounceTimeoutId) clearTimeout(concurrency.debounceTimeoutId)
       concurrency.debounceTimeoutId = setTimeout(() => {
         concurrency.debounceTimeoutId = null
-        if(canceled) return resolve(null)
+        if(ruleExecution.canceled) return resolve(null)
         resolve(rule.consequence(consequenceArgs))
       }, rule.throttle || rule.delay || rule.debounce)
     })

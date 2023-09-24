@@ -33,6 +33,7 @@ export type Store = {
   getState: () => any
   subscribe: (cb:(state:any)=>void) => () => void
   addRule: (rule:Rule) => void
+  ruleExecution?: RuleExecution
 }
 
 export type StoreContainer = {
@@ -136,7 +137,8 @@ export type ActionExecution = {
 export type RuleExecution = {
   execId: number
   concurrencyId: string,
-  actionExecId: number
+  actionExecId: number,
+  canceled: boolean,
 }
 
 export type RulePosition = 'BEFORE' | 'INSTEAD' | 'AFTER'

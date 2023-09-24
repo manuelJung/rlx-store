@@ -32,12 +32,17 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
 
         // transform actions
         for(const key in config.actions) {
-          container.store[key] = (...args:any[]) => {
+          container.store[key] = function (...args:any[]) {
+            const store = this as t.Store
+            /** consequence can attach action execution */
+            if(store.ruleExecution?.canceled) return null
+
             const action = {
               type: config.name + '/' + key,
               meta: args,
               payload: args[0],
             }
+
             const result = managers.rule.dispatch(
               action, 
               container,
