@@ -33,7 +33,7 @@ export type Store = {
   getState: () => any
   subscribe: (cb:(state:any)=>void) => () => void
   addRule: (rule:Rule) => void
-  ruleExecution?: RuleExecution
+  dispatchWrapper?: (fn:any) => void
 }
 
 export type StoreContainer = {

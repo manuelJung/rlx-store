@@ -62,7 +62,7 @@ describe('rule -> concurrency', () => {
     expect(store.getState()).toEqual(['second', 'fourth'])
   })
 
-  it.skip('ONCE: cancles all subsequent calls', async () => {
+  it('ONCE: cancles all subsequent calls', async () => {
     const c = setupTest()
     const store = c.createStore({
       name: 'test',
@@ -76,7 +76,7 @@ describe('rule -> concurrency', () => {
     store.addRule({
       id: 'effect',
       target: 'test/myAction',
-      concurrency: 'LAST',
+      concurrency: 'ONCE',
       consequence: ({store, action}) => {
         store.otherAction(action.payload)
       },
@@ -89,5 +89,36 @@ describe('rule -> concurrency', () => {
     store.myAction('fourth')
 
     expect(store.getState()).toEqual(['first'])
+  })
+
+  it('SWITCH: cancles all past executions when an execution finishes', async () => {
+    const c = setupTest()
+    const store = c.createStore({
+      name: 'test',
+      state: [],
+      actions: {
+        myAction: (id:string, ms:number) => state => state,
+        otherAction: (id:string) => state => [...state, id],
+      }
+    })
+
+    store.addRule({
+      id: 'effect',
+      target: 'test/myAction',
+      concurrency: 'SWITCH',
+      consequence: async ({store, action}) => {
+        await wait(action.meta[1])
+        store.otherAction(action.payload)
+      },
+    })
+
+    store.myAction('first', 20)
+    store.myAction('second', 10)
+    store.myAction('third', 30)
+    store.myAction('fourth', 40)
+
+    await wait(50)
+
+    expect(store.getState()).toEqual(['second', 'third', 'fourth'])
   })
 })

@@ -56,7 +56,7 @@ export default function consequence (
     for(const container of storeDb.values()) {
       if(container.store.id === name && container.store.key === key) return {
         ...container.store,
-        ruleExecution,
+        dispatchWrapper: effect,
       } satisfies t.Store
     }
     return null
@@ -66,7 +66,7 @@ export default function consequence (
     for(const container of storeDb.values()) {
       if(container.store.id === name) stores.push(container.store)
     }
-    return stores.map(store => ({...store, ruleExecution}) satisfies t.Store)
+    return stores.map(store => ({...store, dispatchWrapper: effect}) satisfies t.Store)
   }
 
   /**
@@ -164,8 +164,9 @@ export default function consequence (
       logic: 'SWITCH'
     })
     wrappedExecIds.push(ruleExecution.execId)
-    fn()
+    const result = fn()
     wrappedExecIds.pop()
+    return result
   }
   const consequenceArgs:t.ConsequenceArgs = { 
     action, 
@@ -173,7 +174,7 @@ export default function consequence (
     effect,
     store: {
       ...actionExecution.storeContainer.store,
-      ruleExecution,
+      dispatchWrapper: effect,
     } satisfies t.Store,
     getStore,
     getStores,

@@ -35,24 +35,24 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
           container.store[key] = function (...args:any[]) {
             const store = this as t.Store
             /** consequence can attach action execution */
-            if(store.ruleExecution?.canceled) return null
-
-            const action = {
-              type: config.name + '/' + key,
-              meta: args,
-              payload: args[0],
-            }
-
-            const result = managers.rule.dispatch(
-              action, 
-              container,
-              db,
-              () => {
-                const updateFn = config.actions[key](...args)
-                container.state = updateFn(container.state)
-              },
-            )
-            return result
+            const wrapper = store.dispatchWrapper ?? (fn => fn())
+            return wrapper(() => {
+              const action = {
+                type: config.name + '/' + key,
+                meta: args,
+                payload: args[0],
+              }
+  
+              return managers.rule.dispatch(
+                action, 
+                container,
+                db,
+                () => {
+                  const updateFn = config.actions[key](...args)
+                  container.state = updateFn(container.state)
+                },
+              )
+            })
           }
         }
 
