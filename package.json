@@ -8,7 +8,9 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "turbo test"
+    "build": "turbo build",
+    "test": "turbo test",
+    "size": "turbo size"
   },
   "repository": {
     "type": "git",
