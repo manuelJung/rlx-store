@@ -121,10 +121,10 @@ export default function consequence (
     })
   }
 
-  // skip if 'skipRule' condition matched
-  if(action.meta && action.skipRule && matchGlob(rule.id, action.skipRule)){
-    return endConsequence('SKIP')
-  }
+  // TODO: skip if 'skipRule' condition matched
+  // if(action.meta && action.skipRule && matchGlob(rule.id, action.skipRule)){
+  //   return endConsequence('SKIP')
+  // }
   // skip if rule condition does not match
   if(rule.condition){
     const args:t.ConditionArgs = { 
@@ -261,11 +261,11 @@ export default function consequence (
   return {resolved:true}
 }
 
-function matchGlob(id:string, glob:string | string[]):boolean{
-  if(glob === '*') return true
-  if(typeof glob === 'string') glob = [glob]
-  for(let i=0;i<glob.length;i++){
-    if(id.includes(glob[i])) return true
-  }
-  return false
-}
+// function matchGlob(id:string, glob:string | string[]):boolean{
+//   if(glob === '*') return true
+//   if(typeof glob === 'string') glob = [glob]
+//   for(let i=0;i<glob.length;i++){
+//     if(id.includes(glob[i])) return true
+//   }
+//   return false
+// }

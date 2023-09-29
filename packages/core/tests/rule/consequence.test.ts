@@ -167,4 +167,33 @@ describe('rule -> consequence', () => {
       payload: 'bar'
     })
   })
+
+  it('will call returned function when execution gets canceled', () => {
+    const c = setupTest()
+    const store = c.createStore({
+      name: 'test',
+      actions: {
+        myAction: (id:string) => state => state
+      }
+    })
+
+    const cb = jest.fn()
+
+    store.addRule({
+      id: 'test',
+      target: 'test/myAction',
+      concurrency: 'LAST',
+      consequence: args => {
+        return () => cb(args.action.payload)
+      }
+    })
+
+    store.myAction('first')
+
+    expect(cb).not.toBeCalled()
+
+    store.myAction('second')
+
+    expect(cb).toBeCalledWith('first')
+  })
 })
