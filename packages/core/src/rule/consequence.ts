@@ -53,8 +53,9 @@ export default function consequence (
   // }
 
   const getStore = (name:string, key?:string) => {
+    // TODO: O(1) performance needed
     for(const container of storeDb.values()) {
-      if(container.store.id === name && container.store.key === key) return {
+      if(container.id === name && container.store.key === key) return {
         ...container.store,
         dispatchWrapper: effect,
       } satisfies t.Store
@@ -64,7 +65,7 @@ export default function consequence (
   const getStores = (name:string) => {
     const stores:t.Store[] = []
     for(const container of storeDb.values()) {
-      if(container.store.id === name) stores.push(container.store)
+      if(container.id === name) stores.push(container.store)
     }
     return stores.map(store => ({...store, dispatchWrapper: effect}) satisfies t.Store)
   }

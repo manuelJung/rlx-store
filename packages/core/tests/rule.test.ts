@@ -1,53 +1,6 @@
 import setupTest from "./setup-test"
 
 describe('rule', () => {
-  it('can react to store actions', () => {
-    const c = setupTest()
-
-    const consequence = jest.fn()
-    const store = c.createStore({
-      name: 'test',
-      actions: {
-        myAction: (id:string) => state => state
-      }
-    })
-    store.addRule({
-      id: 'effect',
-      target: 'test/myAction',
-      consequence: consequence,
-    })
-
-    store.myAction('foo')
-    expect(consequence).toBeCalledWith(expect.objectContaining({
-      action: {
-        type: 'test/myAction',
-        meta: ['foo'],
-        payload: 'foo',
-      }
-    }))
-  })
-
-  it('can dispatch action in consequence', () => {
-    const c = setupTest()
-    const store = c.createStore({
-      name: 'test',
-      actions: {
-        myAction: (id:string) => state => state,
-        otherAction: (id:string) => state => state,
-      }
-    })
-    store.myAction = jest.fn(store.myAction)
-    store.otherAction = jest.fn(store.otherAction)
-    store.addRule({
-      id: 'effect',
-      target: 'test/myAction',
-      consequence: ({store}) => store.otherAction('bar'),
-    })
-
-    store.myAction('foo')
-    expect(store.myAction).toBeCalledWith('foo')
-    expect(store.otherAction).toBeCalledWith('bar')
-  })
 
   it('prevents consequence execution when condition does not match', () => {
     const c = setupTest()
@@ -84,35 +37,6 @@ describe('rule', () => {
         payload: 'foo',
       }
     }))
-  })
-
-  it('can manipulate actions by returning action', () => {
-    const c = setupTest()
-    const store = c.createStore({
-      name: 'test',
-      actions: {
-        myAction: (id:string) => state => state
-      }
-    })
-
-    store.addRule({
-      id: 'test',
-      target: 'test/myAction',
-      position: 'INSTEAD',
-      consequence: args => ({
-        ...args.action,
-        meta: ['bar'],
-        payload: 'bar'
-      })
-    })
-
-    const action = store.myAction('foo')
-
-    expect(action).toEqual({
-      type: 'test/myAction',
-      meta: ['bar'],
-      payload: 'bar'
-    })
   })
 
   

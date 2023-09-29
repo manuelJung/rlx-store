@@ -72,8 +72,8 @@ describe('rule -> consequence', () => {
         id: 'effect',
         target: 'test/myAction',
         consequence: args => {
-          consequenceStoreFound = args.getStore('test', '')
-          consequenceStore404 = args.getStore('not-found', '')
+          consequenceStoreFound = args.getStore('test')
+          consequenceStore404 = args.getStore('not-found')
         }
       })
 
@@ -87,10 +87,84 @@ describe('rule -> consequence', () => {
       expect(consequenceStore404).toBe(null)
     })
 
-    it.todo('getStores: returns all stores by name')
+    it('getStores: returns all stores by name', () => {
+      const c = setupTest()
+      const store = c.createStore({
+        name: 'test',
+        actions: {
+          myAction: (id:string) => state => state,
+        }
+      })
+      let consequenceStoreFound:any = null
+      let consequenceStore404:any = null
+      store.addRule({
+        id: 'effect',
+        target: 'test/myAction',
+        consequence: args => {
+          consequenceStoreFound = args.getStores('test')
+          consequenceStore404 = args.getStores('not-found')
+        }
+      })
+
+      store.myAction('id')
+
+      expect(consequenceStoreFound).toEqual([{
+        ...store,
+        dispatchWrapper: expect.anything()
+      }])
+
+      expect(consequenceStore404).toEqual([])
+    })
   })
 
-  it.todo('can dispatch actions')
+  it('can dispatch actions', () => {
+    const c = setupTest()
+    const store = c.createStore({
+      name: 'test',
+      actions: {
+        myAction: (id:string) => state => state,
+        otherAction: (id:string) => state => state,
+      }
+    })
+    store.myAction = jest.fn(store.myAction)
+    store.otherAction = jest.fn(store.otherAction)
+    store.addRule({
+      id: 'effect',
+      target: 'test/myAction',
+      consequence: ({store}) => store.otherAction('bar'),
+    })
 
-  it.todo('can manipulate actions by returning action (with position INSTEAD)')
+    store.myAction('foo')
+    expect(store.myAction).toBeCalledWith('foo')
+    expect(store.otherAction).toBeCalledWith('bar')
+  })
+
+  it('can manipulate actions by returning action (with position INSTEAD)', () => {
+    const c = setupTest()
+    const store = c.createStore({
+      name: 'test',
+      actions: {
+        myAction: (id:string) => state => state
+      }
+    })
+
+    store.addRule({
+      id: 'test',
+      target: 'test/myAction',
+      position: 'INSTEAD',
+      consequence: args => ({
+        ...args.action,
+        meta: ['bar'],
+        payload: 'bar'
+      })
+    })
+
+    const action = store.myAction('foo')
+
+    expect(action).toEqual({
+      type: 'test/myAction',
+      meta: ['bar'],
+      payload: 'bar'
+    })
+  })
 })
