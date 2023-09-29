@@ -89,7 +89,7 @@ export type RuleContainer = {
 export type ConditionArgs = {
   action: Action
   store: Store & Record<string, any>
-  getStore: (name:string, key:string) => Store | null
+  getStore: (name:string, key?:string) => Store | null
   getStores: (name:string) => Store[]
 }
 

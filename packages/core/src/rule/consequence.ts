@@ -52,6 +52,19 @@ export default function consequence (
   //   || container.publicContext.global[name]
   // }
 
+  const effect = fn => {
+    if(ruleExecution.canceled) return
+    rule.concurrency === 'SWITCH' && container.events.trigger({
+      type: 'CANCEL_CONSEQUENCE',
+      ruleExecution,
+      logic: 'SWITCH'
+    })
+    wrappedExecIds.push(ruleExecution.execId)
+    const result = fn()
+    wrappedExecIds.pop()
+    return result
+  }
+
   const getStore = (name:string, key?:string) => {
     // TODO: O(1) performance needed
     for(const container of storeDb.values()) {
@@ -116,10 +129,7 @@ export default function consequence (
   if(rule.condition){
     const args:t.ConditionArgs = { 
       action,
-      store: {
-        ...actionExecution.storeContainer.store,
-        actionExecution,
-      },
+      store: actionExecution.storeContainer.store,
       getStore,
       getStores,
     }
@@ -157,18 +167,6 @@ export default function consequence (
   let status:'CANCELED'|'REMOVED'|null = null
   const cancel = () => {ruleExecution.canceled = true}
   const wasCanceled = () => ruleExecution.canceled
-  const effect = fn => {
-    if(ruleExecution.canceled) return
-    rule.concurrency === 'SWITCH' && container.events.trigger({
-      type: 'CANCEL_CONSEQUENCE',
-      ruleExecution,
-      logic: 'SWITCH'
-    })
-    wrappedExecIds.push(ruleExecution.execId)
-    const result = fn()
-    wrappedExecIds.pop()
-    return result
-  }
   const consequenceArgs:t.ConsequenceArgs = { 
     action, 
     wasCanceled, 
