@@ -52,7 +52,7 @@ export default function consequence (
   //   || container.publicContext.global[name]
   // }
 
-  const getStore = (name:string, key:string) => {
+  const getStore = (name:string, key?:string) => {
     for(const container of storeDb.values()) {
       if(container.store.id === name && container.store.key === key) return {
         ...container.store,

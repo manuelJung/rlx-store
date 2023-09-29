@@ -98,7 +98,7 @@ export type ConsequenceArgs = {
   store: Store & Record<string, any>
   wasCanceled: () => boolean
   effect: (fn:(...args:any[])=>void) => void
-  getStore: (name:string, key:string) => Store | null
+  getStore: (name:string, key?:string) => Store | null
   getStores: (name:string) => Store[]
 }
 
