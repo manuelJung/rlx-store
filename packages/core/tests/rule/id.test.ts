@@ -1,7 +1,7 @@
 import setupTest from "../setup-test"
 
 describe('rule -> id', () => {
-  it('acts as id for effect-db', () => {
+  it('acts as id for rule-db', () => {
     const c = setupTest()
 
     const store = c.createStore({name: 'my-name', key: 'foo'})
@@ -10,7 +10,7 @@ describe('rule -> id', () => {
     expect(c.managers.rule.db.has('rule-id-my-name'))
   })
 
-  it('is propagated to effect-container', () => {
+  it('is propagated to rule-container', () => {
     const c = setupTest()
 
     const store = c.createStore({name: 'my-name'})
@@ -20,7 +20,7 @@ describe('rule -> id', () => {
     expect(container?.id).toBe('rule-id')
   })
 
-  it('creates a totally new effect (-container) instance when value changes', () => {
+  it('creates a totally new rule (-container) instance when value changes', () => {
     const c = setupTest()
 
     const store = c.createStore({name: 'my-name'})
