@@ -32,8 +32,8 @@ export default function createProductList (key:string) {
         })
       }),
       setQuery: (query:string) => ({
-        lense: 'filterValues',
-        updater: () => ({query}),
+        lense: ['filterValues', 'query'],
+        updater: () => query,
       }),
       setPage: (page:number) => ({
         lense: 'filterValues',

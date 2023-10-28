@@ -29,7 +29,8 @@ export type AsyncActionConfig = {
   }
   fetcher: (state:any) => Promise<any>
   mapResponse?: (response:any, state:any) => any
-  optimisticData?: (state:any) => any 
+  optimisticData?: (state:any) => any
+  lense?: string // TODO
 }
 
 export type StoreConfig = {
