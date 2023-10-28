@@ -44,6 +44,7 @@ export default function getCartStore () {
         fetcher: fetchCart,
       }),
     },
+    onSetup: store => store.fetch()
   })
 
   // const arg:AddItemArgs = {amount:1, sku:'123'}

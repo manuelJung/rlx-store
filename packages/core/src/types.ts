@@ -19,12 +19,18 @@ export type FactoryArgs = {
   onDestroy: (cb:()=>void) => void
 }
 
+export type FunctionAction = (state:any) => any
+
+export type AsyncActionConfig = {
+  fetcher: (state:any) => Promise<any>
+}
+
 export type StoreConfig = {
   name: string
   key?: string
   state: any
   persist?: boolean
-  actions: Record<string, (...args:any[]) => any>
+  actions: Record<string, (...args:any[]) => (FunctionAction|AsyncActionConfig)>
 }
 
 export type Store = {
