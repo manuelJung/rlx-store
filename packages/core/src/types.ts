@@ -22,6 +22,11 @@ export type FactoryArgs = {
 export type FunctionAction = (state:any) => any
 
 export type AsyncActionConfig = {
+  mappings?: {
+    data?: string
+    isFetching?: string
+    fetchError?: string
+  }
   fetcher: (state:any) => Promise<any>
 }
 

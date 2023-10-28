@@ -64,25 +64,30 @@ export default function createStoreManager(
               } else {
                 return new Promise(resolve => {
                   dispatch(key+'/request', null, () => {
+                    const m = {
+                      data: updateFn.mappings?.data ?? 'data',
+                      isFetching: updateFn.mappings?.isFetching ?? 'isFetching',
+                      fetchError: updateFn.mappings?.fetchError ?? 'fetchError',
+                    }
                     container.state = {
                       ...container.state,
-                      isFetching: true,
-                      fetchError: null,
+                      ...(m.isFetching in container.state ? {[m.isFetching]:true}: {}),
+                      ...(m.fetchError in container.state ? {[m.fetchError]:null}: {}),
                     }
                     updateFn.fetcher(container.state).then(
                       result => dispatch(key+'/success', result, () => {
                         container.state = {
                           ...container.state,
-                          data: result,
-                          isFetching: false,
+                          ...(m.isFetching in container.state ? {[m.isFetching]:false}: {}),
+                          ...(m.data in container.state ? {[m.data]:result}: {}),
                         }
                         resolve(true)
                       }),
                       error => dispatch(key+'/failure', error, () => {
                         container.state = {
                           ...container.state,
-                          fetchError: error.toString(),
-                          isFetching: false,
+                          ...(m.isFetching in container.state ? {[m.isFetching]:false}: {}),
+                          ...(m.fetchError in container.state ? {[m.fetchError]:error}: {}),
                         }
                         resolve(false)
                       })

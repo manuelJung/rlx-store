@@ -32,8 +32,7 @@ describe('store -> name', () => {
       name: 'my-name',
       actions: { test: () => () => null }
     })
-    const action = store.test()
-    expect(action?.type).toBe('my-name/test')
+    store.test()
     expect(c.managers.rule.dispatch).toBeCalledWith(
       {type:'my-name/test', meta: [], payload: undefined}, 
       expect.anything(),

@@ -6,6 +6,7 @@ describe('store -> async action config', () => {
     const fetcher = jest.fn(async () => 'result')
     const store = c.createStore({
       name: 'my-name',
+      state: {data:null},
       actions: {
         increment: () => ({ fetcher })
       }
@@ -28,13 +29,17 @@ describe('store -> async action config', () => {
       expect.anything(),
       expect.anything(),
     )
+
+    expect(store.getState()).toEqual({ data: 'result' })
   })
 
   it('triggers /request and /failure action when action call failed', async () => {
     const c = setupTest({preventAutoMount:true})
-    const fetcher = jest.fn(async () => {throw new Error('my-error')})
+    const error = new Error('my-error')
+    const fetcher = jest.fn(async () => {throw error})
     const store = c.createStore({
       name: 'my-name',
+      state: {fetchError:null},
       actions: {
         increment: () => ({ fetcher })
       }
@@ -52,10 +57,12 @@ describe('store -> async action config', () => {
     )
 
     expect(c.managers.rule.dispatch).toBeCalledWith(
-      {type: 'my-name/increment/failure', meta: [], payload: new Error('my-error')},
+      {type: 'my-name/increment/failure', meta: [], payload: error},
       expect.anything(),
       expect.anything(),
       expect.anything(),
     )
+
+    expect(store.getState()).toEqual({ fetchError: error })
   })
 })
