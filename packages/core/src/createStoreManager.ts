@@ -37,21 +37,81 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
             /** consequence can attach action execution */
             const wrapper = store.dispatchWrapper ?? (fn => fn())
             return wrapper(() => {
-              const action = {
-                type: config.name + '/' + key,
-                meta: args,
-                payload: args[0],
+              const updateFn = config.actions[key](...args)
+
+              if(typeof updateFn === 'function') {
+                return managers.rule.dispatch(
+                  {
+                    type: config.name + '/' + key,
+                    meta: args,
+                    payload: args[0],
+                  }, 
+                  container,
+                  db,
+                  () => {
+                    container.state = updateFn(container.state)
+                  },
+                )
               }
-  
-              return managers.rule.dispatch(
-                action, 
-                container,
-                db,
-                () => {
-                  const updateFn = config.actions[key](...args)
-                  container.state = updateFn(container.state)
-                },
-              )
+              else {
+                return new Promise((resolve) => {
+                  managers.rule.dispatch(
+                    {
+                      type: config.name + '/' + key + '/request',
+                      meta: args,
+                      payload: null,
+                    },
+                    container,
+                    db,
+                    () => {
+                      container.state = {
+                        ...container.state,
+                        isFetching: true,
+                        fetchError: null,
+                      }
+                      updateFn.fetcher(container.state).then(
+                        result => managers.rule.dispatch(
+                          {
+                            type: config.name + '/' + key + '/success',
+                            meta: args,
+                            payload: result,
+                          },
+                          container,
+                          db,
+                          () => {
+                            container.state = {
+                              ...container.state,
+                              data: result,
+                              isFetching: false,
+                            }
+                            resolve(true)
+                          }
+                        ),
+                        error => managers.rule.dispatch(
+                          {
+                            type: config.name + '/' + key + '/failure',
+                            meta: args,
+                            payload: {
+                              msg: error.toString(),
+                              stack: error.stack,
+                            },
+                          },
+                          container,
+                          db,
+                          () => {
+                            container.state = {
+                              ...container.state,
+                              fetchError: error.toString(),
+                              isFetching: false,
+                            }
+                            resolve(false)
+                          }
+                        )
+                      )
+                    }
+                  )
+                })
+              }
             })
           }
         }
