@@ -28,6 +28,8 @@ export type AsyncActionConfig = {
     fetchError?: string
   }
   fetcher: (state:any) => Promise<any>
+  mapResponse?: (response:any, state:any) => any
+  optimisticData?: (state:any) => any 
 }
 
 export type StoreConfig = {

@@ -38,6 +38,13 @@ export default function createStoreManager(
               },
             }),
           }
+          const updateState = (nextState:any) => {
+            if(typeof nextState !== 'object') container.state = nextState
+            else if(nextState === null) container.state = nextState
+            else if(Array.isArray(nextState)) container.state = nextState
+            else container.state = {...container.state, ...nextState}
+            for (const fn of container.subscriptions) fn(container.state)
+          }
 
           // transform actions
           for (const key in config.actions) {
@@ -60,35 +67,46 @@ export default function createStoreManager(
               const updateFn = config.actions[key](...args)
 
               if (typeof updateFn === "function") {
-                return dispatch(key, args[0], () => container.state = updateFn(container.state))
+                return dispatch(key, args[0], () => updateState(updateFn(container.state)))
               } else {
-                return new Promise(resolve => {
-                  dispatch(key+'/request', null, () => {
-                    const m = {
-                      data: updateFn.mappings?.data ?? 'data',
-                      isFetching: updateFn.mappings?.isFetching ?? 'isFetching',
-                      fetchError: updateFn.mappings?.fetchError ?? 'fetchError',
-                    }
-                    container.state = {
-                      ...container.state,
+                return new Promise<boolean>(resolve => {
+                  const m = {
+                    data: updateFn.mappings?.data ?? 'data',
+                    isFetching: updateFn.mappings?.isFetching ?? 'isFetching',
+                    fetchError: updateFn.mappings?.fetchError ?? 'fetchError',
+                  }
+                  const requestPayload = updateFn.optimisticData
+                    ? updateFn.optimisticData(container.state)
+                    : undefined
+                  const prevData = container.state[m.data]
+                  dispatch(key+'/request', requestPayload, () => {
+                    updateState({
                       ...(m.isFetching in container.state ? {[m.isFetching]:true}: {}),
                       ...(m.fetchError in container.state ? {[m.fetchError]:null}: {}),
-                    }
+                      [m.data]: requestPayload ?? prevData,
+                    })
                     updateFn.fetcher(container.state).then(
                       result => dispatch(key+'/success', result, () => {
-                        container.state = {
-                          ...container.state,
-                          ...(m.isFetching in container.state ? {[m.isFetching]:false}: {}),
-                          ...(m.data in container.state ? {[m.data]:result}: {}),
+                        if(updateFn.mapResponse) {
+                          updateState({
+                            ...(m.isFetching in container.state ? {[m.isFetching]:false}: {}),
+                            ...updateFn.mapResponse(result, container.state),
+                          })
+                        }
+                        else {
+                          updateState({
+                            ...(m.isFetching in container.state ? {[m.isFetching]:false}: {}),
+                            [m.data]: result
+                          })
                         }
                         resolve(true)
                       }),
                       error => dispatch(key+'/failure', error, () => {
-                        container.state = {
-                          ...container.state,
+                        updateState({
                           ...(m.isFetching in container.state ? {[m.isFetching]:false}: {}),
                           ...(m.fetchError in container.state ? {[m.fetchError]:error}: {}),
-                        }
+                          ...(requestPayload ? {[m.data]:prevData} : {}),
+                        })
                         resolve(false)
                       })
                     )
