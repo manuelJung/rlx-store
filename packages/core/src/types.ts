@@ -28,6 +28,9 @@ export type AsyncActionConfig = {
     fetchError?: string
   }
   fetcher: (state:any) => Promise<any>
+  concurrency?: 'DEFAULT' | 'FIRST' | 'LAST' | 'SWITCH'
+  throttle?: number
+  debounce?: number
   mapResponse?: (response:any, state:any) => any
   optimisticData?: (state:any) => any
   lense?: string // TODO

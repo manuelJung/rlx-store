@@ -119,7 +119,9 @@ export default function createStoreManager(
               container.store.addRule({
                 id: key,
                 target: `/${key}/request`,
-                concurrency: 'SWITCH',
+                concurrency: result.concurrency ?? 'SWITCH',
+                throttle: result.throttle,
+                debounce: result.debounce,
                 consequence: args => result.fetcher(args.store.getState()).then(
                   result => {
                     args.effect(() => successAction(result, ...args.action.meta))

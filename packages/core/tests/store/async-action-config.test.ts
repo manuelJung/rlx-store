@@ -8,18 +8,18 @@ describe('store -> async action config', () => {
       name: 'my-name',
       state: {data:null},
       actions: {
-        increment: () => ({ fetcher })
+        increment: (n:number) => ({ fetcher })
       }
     })
 
-    const result = await store.increment()
+    const result = await store.increment(1)
 
     expect(result).toBe(true)
 
     expect(c.managers.rule.dispatch).toBeCalledWith(
       expect.objectContaining({
         type: 'my-name/increment/request', 
-        meta: [], 
+        meta: [1], 
         payload: undefined, 
       }),
       expect.anything(),
@@ -30,7 +30,7 @@ describe('store -> async action config', () => {
     expect(c.managers.rule.dispatch).toBeCalledWith(
       {
         type: 'my-name/increment/success', 
-        meta: ['result'], 
+        meta: ['result', 1],
         payload: 'result',
       },
       expect.anything(),
