@@ -104,12 +104,12 @@ export const createAction = (key:string, config:{
           const datakey = actionConfig.mappings?.data ?? 'data'
           action._resetData = state[datakey]
         }
-        config.managers.rule.dispatch(
+        config.managers.rule.dispatch({
           action,
-          config.container,
-          config.containerDb,
-          () => updateState(onExecute(actionConfig, ...args)(state))
-        )
+          storeContainer: config.container,
+          storeDb: config.containerDb,
+          cb: () => updateState(onExecute(actionConfig, ...args)(state))
+        })
       })
       return promise
     }
@@ -121,12 +121,12 @@ export const createAction = (key:string, config:{
         payload: args[0],
       }
       const fn = config.updateFn(...args) as FunctionAction
-      config.managers.rule.dispatch(
+      config.managers.rule.dispatch({
         action,
-        config.container,
-        config.containerDb,
-        () => updateState(fn(state)),
-      )
+        storeContainer: config.container,
+        storeDb: config.containerDb,
+        cb: () => updateState(fn(state)),
+      })
     })
   }
 }

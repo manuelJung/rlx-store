@@ -23,13 +23,14 @@ export default function createRuleManager (args:t.FactoryArgs, managers:t.Manage
       managers.events.trigger({type:'REGISTER_RULE', container})
       startAddWhenSaga(container)
     },
-    dispatch: (
+    dispatch: (args: {
       action:t.Action, 
       storeContainer:t.StoreContainer,
       storeDb: Map<string,t.StoreContainer>,
       cb:()=>void, 
+    }
     ) => {
-      return dispatchEvent(action, activeRules, cb, storeContainer, storeDb)
+      return dispatchEvent(args.action, activeRules, args.cb, args.storeContainer, args.storeDb)
     }
   }
 }

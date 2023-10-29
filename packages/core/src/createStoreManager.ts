@@ -153,31 +153,31 @@ export default function createStoreManager(
 
           args.onMount(() => {
             container.numParents++
-            managers.rule.dispatch(
-              {
+            managers.rule.dispatch({
+              action: {
                 type: config.name + "/@mount",
                 meta: [],
                 payload: null,
               },
-              container,
-              db,
-              () => null
-            )
+              storeContainer: container,
+              storeDb: db,
+              cb: () => null
+            })
             container.events.trigger({ type: "MOUNT" })
           })
 
           args.onDestroy(() => {
             container.numParents--
-            managers.rule.dispatch(
-              {
+            managers.rule.dispatch({
+              action: {
                 type: config.name + "/@destroy",
                 meta: [],
                 payload: null,
               },
-              container,
-              db,
-              () => null
-            )
+              storeContainer: container,
+              storeDb: db,
+              cb: () => null
+            })
 
             if (container.numParents === 0 && !config.persist) {
               container.events.trigger({ type: "DESTROY" })

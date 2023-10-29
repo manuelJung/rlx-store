@@ -16,27 +16,21 @@ describe('store -> async action config', () => {
 
     expect(result).toBe(true)
 
-    expect(c.managers.rule.dispatch).toBeCalledWith(
-      expect.objectContaining({
+    expect(c.managers.rule.dispatch).toBeCalledWith(expect.objectContaining({
+      action: expect.objectContaining({
         type: 'my-name/increment/request', 
         meta: [1], 
         payload: undefined, 
-      }),
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-    )
+      })
+    }))
 
-    expect(c.managers.rule.dispatch).toBeCalledWith(
-      {
+    expect(c.managers.rule.dispatch).toBeCalledWith(expect.objectContaining({
+      action: {
         type: 'my-name/increment/success', 
         meta: ['result', 1],
         payload: 'result',
-      },
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-    )
+      }
+    }))
 
     expect(store.getState()).toEqual({ data: 'result' })
   })
@@ -57,23 +51,17 @@ describe('store -> async action config', () => {
 
     expect(result).toBe(false)
 
-    expect(c.managers.rule.dispatch).toBeCalledWith(
-      expect.objectContaining({
+    expect(c.managers.rule.dispatch).toBeCalledWith(expect.objectContaining({
+      action: expect.objectContaining({
         type: 'my-name/increment/request', 
         meta: [], 
         payload: undefined, 
-      }),
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-    )
+      })
+    }))
 
-    expect(c.managers.rule.dispatch).toBeCalledWith(
-      {type: 'my-name/increment/failure', meta: [error], payload: error},
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-    )
+    expect(c.managers.rule.dispatch).toBeCalledWith(expect.objectContaining({
+      action: {type: 'my-name/increment/failure', meta: [error], payload: error},
+    }))
 
     expect(store.getState()).toEqual({ fetchError: error })
   })
@@ -186,7 +174,7 @@ describe('store -> async action config', () => {
       }
     })
 
-    await new Promise(r => setTimeout(r, 10))
+    await new Promise(r => setTimeout(r, 1))
     expect(store.getState().data).toBe('result')
   })
 })
