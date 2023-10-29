@@ -171,4 +171,22 @@ describe('store -> async action config', () => {
 
     expect(store.getState().data).toBe('initial')
   })
+
+  it('can trigger on-mount', async () => {
+    const c = setupTest()
+    const fetcher = jest.fn(async () => 'result')
+    const store = c.createStore({
+      name: 'my-name',
+      state: {data:null},
+      actions: {
+        increment: () => ({
+          fetcher,
+          triggerOnMount: true
+        })
+      }
+    })
+
+    await new Promise(r => setTimeout(r, 10))
+    expect(store.getState().data).toBe('result')
+  })
 })

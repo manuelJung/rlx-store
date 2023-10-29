@@ -34,6 +34,7 @@ export type AsyncActionConfig = {
   mapResponse?: (response:any, state:any) => any
   optimisticData?: (state:any) => any
   lense?: string // TODO
+  triggerOnMount?: boolean
 }
 
 export type StoreConfig = {

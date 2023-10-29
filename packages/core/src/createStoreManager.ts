@@ -41,8 +41,8 @@ export default function createStoreManager(
 
           // transform actions
           for(const key in config.actions) {
-            const result = config.actions[key]()
-            if(typeof result === 'function') {
+            const actionReturn = config.actions[key]()
+            if(typeof actionReturn === 'function') {
               container.store[key] = createAction(key, {
                 container,
                 containerDb: db,
@@ -52,6 +52,7 @@ export default function createStoreManager(
               })
             }
             else {
+              const actionConfig = actionReturn
               const getM = (config:t.AsyncActionConfig) => ({
                 data: config.mappings?.data ?? 'data',
                 isFetching: config.mappings?.isFetching ?? 'isFetching',
@@ -119,10 +120,11 @@ export default function createStoreManager(
               container.store.addRule({
                 id: key,
                 target: `/${key}/request`,
-                concurrency: result.concurrency ?? 'SWITCH',
-                throttle: result.throttle,
-                debounce: result.debounce,
-                consequence: args => result.fetcher(args.store.getState()).then(
+                output: [`/${key}/success`, `/${key}/failure`],
+                concurrency: actionConfig.concurrency ?? 'SWITCH',
+                throttle: actionConfig.throttle,
+                debounce: actionConfig.debounce,
+                consequence: args => actionConfig.fetcher(args.store.getState()).then(
                   result => {
                     args.effect(() => successAction(result, ...args.action.meta))
                     if(args.action._promiseResolve) args.action._promiseResolve(true)
@@ -137,6 +139,15 @@ export default function createStoreManager(
                   },
                 )
               })
+
+              if(actionConfig.triggerOnMount) {
+                container.store.addRule({
+                  id: key + '/on-mount',
+                  target: `/@mount`,
+                  output: `/${key}/request`,
+                  consequence: args => args.store[key]()
+                })
+              }
             }
           }
 
