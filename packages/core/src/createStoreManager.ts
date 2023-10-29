@@ -159,3 +159,64 @@ export default function createStoreManager(
     },
   }
 }
+
+
+
+
+// for(const key in config.actions) {
+//   const result = config.actions[key]()
+//   if(typeof result === 'function') {
+//     container.store[key] = function (...args: any[]) {
+//       const store = this as t.Store
+//       /** consequence can attach action execution */
+//       const wrapper = store.dispatchWrapper ?? ((fn) => fn())
+//       const dispatch = (key: string, payload: any, cb: any) => wrapper(() => {
+//         managers.rule.dispatch(
+//           {
+//             type: config.name + "/" + key,
+//             meta: args,
+//             payload,
+//           },
+//           container,
+//           db,
+//           cb
+//         )
+//       })
+//       const updateFn = config.actions[key](...args) as t.FunctionAction
+//       return dispatch(key, args[0], () => updateState(updateFn(container.state)))
+//     }
+//   }
+//   else {
+//     container.store.addRule({
+//       id: key,
+//       target: `/${key}/request`,
+//       consequence: args => result.fetcher(args.store.getState()).then(
+//         result => args.store[key+'/success'](result, args.action.meta[1]),
+//         error => args.store[key+'/failure'](error, args.action.meta[2]),
+//       )
+//     })
+//     container.store[key] = function (...args: any[]) {
+//       const store = this as t.Store
+//       const actionConfig = config.actions[key](...args) as t.AsyncActionConfig
+//       const requestPayload = actionConfig.optimisticData
+//           ? actionConfig.optimisticData(container.state)
+//           : undefined
+//       /** consequence can attach action execution */
+//       const wrapper = store.dispatchWrapper ?? ((fn) => fn())
+//       const dispatch = (key: string, payload: any, cb: any) => wrapper(() => {
+//         managers.rule.dispatch(
+//           {
+//             type: config.name + "/" + key + '/request',
+//             meta: args,
+//             payload: requestPayload,
+//           },
+//           container,
+//           db,
+//           cb
+//         )
+//       })
+//       // const updateFn = state => 
+//       return dispatch(key, args[0], () => updateState(updateFn(container.state)))
+//     }
+//   }
+// }
