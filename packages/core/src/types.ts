@@ -69,6 +69,8 @@ export type Action = {
   meta: any[],
   skipRule?: string | string[]
   payload: any
+  _promiseResolve?: (b:boolean) => void
+  _resetData?: any
 }
 
 export type RuleContainer = {

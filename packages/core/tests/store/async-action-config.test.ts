@@ -17,14 +17,22 @@ describe('store -> async action config', () => {
     expect(result).toBe(true)
 
     expect(c.managers.rule.dispatch).toBeCalledWith(
-      {type: 'my-name/increment/request', meta: [], payload: undefined},
+      expect.objectContaining({
+        type: 'my-name/increment/request', 
+        meta: [], 
+        payload: undefined, 
+      }),
       expect.anything(),
       expect.anything(),
       expect.anything(),
     )
 
     expect(c.managers.rule.dispatch).toBeCalledWith(
-      {type: 'my-name/increment/success', meta: [], payload: 'result'},
+      {
+        type: 'my-name/increment/success', 
+        meta: ['result'], 
+        payload: 'result',
+      },
       expect.anything(),
       expect.anything(),
       expect.anything(),
@@ -50,14 +58,18 @@ describe('store -> async action config', () => {
     expect(result).toBe(false)
 
     expect(c.managers.rule.dispatch).toBeCalledWith(
-      {type: 'my-name/increment/request', meta: [], payload: undefined},
+      expect.objectContaining({
+        type: 'my-name/increment/request', 
+        meta: [], 
+        payload: undefined, 
+      }),
       expect.anything(),
       expect.anything(),
       expect.anything(),
     )
 
     expect(c.managers.rule.dispatch).toBeCalledWith(
-      {type: 'my-name/increment/failure', meta: [], payload: error},
+      {type: 'my-name/increment/failure', meta: [error], payload: error},
       expect.anything(),
       expect.anything(),
       expect.anything(),

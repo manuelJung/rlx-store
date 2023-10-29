@@ -1,5 +1,5 @@
 import * as t from "./types"
-import { createEventContainer } from "./utils"
+import { createAction, createEventContainer } from "./utils"
 
 export default function createStoreManager(
   args: t.FactoryArgs,
@@ -38,81 +38,103 @@ export default function createStoreManager(
               },
             }),
           }
-          const updateState = (nextState:any) => {
-            if(typeof nextState !== 'object') container.state = nextState
-            else if(nextState === null) container.state = nextState
-            else if(Array.isArray(nextState)) container.state = nextState
-            else container.state = {...container.state, ...nextState}
-            for (const fn of container.subscriptions) fn(container.state)
-          }
 
           // transform actions
-          for (const key in config.actions) {
-            container.store[key] = function (...args: any[]) {
-              const store = this as t.Store
-              /** consequence can attach action execution */
-              const wrapper = store.dispatchWrapper ?? ((fn) => fn())
-              const dispatch = (key: string, payload: any, cb: any) => wrapper(() => {
-                managers.rule.dispatch(
-                  {
-                    type: config.name + "/" + key,
-                    meta: args,
-                    payload,
+          for(const key in config.actions) {
+            const result = config.actions[key]()
+            if(typeof result === 'function') {
+              container.store[key] = createAction(key, {
+                container,
+                containerDb: db,
+                managers,
+                storeConfig: config,
+                updateFn: config.actions[key],
+              })
+            }
+            else {
+              const getM = (config:t.AsyncActionConfig) => ({
+                data: config.mappings?.data ?? 'data',
+                isFetching: config.mappings?.isFetching ?? 'isFetching',
+                fetchError: config.mappings?.fetchError ?? 'fetchError',
+              })
+              container.store[key] = createAction(key+'/request', {
+                container,
+                containerDb: db,
+                managers,
+                storeConfig: config,
+                updateFn: config.actions[key],
+                isRequestStage: true,
+                onExecute: config => state => {
+                  const m = getM(config)
+                  const requestPayload = config.optimisticData
+                    ? config.optimisticData(state)
+                    : undefined
+                  return {
+                    ...(m.isFetching in state ? {[m.isFetching]:true}: {}),
+                    ...(m.fetchError in state ? {[m.fetchError]:null}: {}),
+                    [m.data]: requestPayload ?? state[m.data],
+                  }
+                }
+              })
+              const successAction = createAction(key+'/success', {
+                container,
+                containerDb: db,
+                managers,
+                storeConfig: config,
+                dispatchWrapper: fn => fn(),
+                updateFn: config.actions[key],
+                onExecute: (config, result) => state => {
+                  const m = getM(config)
+                  if(config.mapResponse) {
+                    return ({
+                      ...(m.isFetching in state ? {[m.isFetching]:false}: {}),
+                      ...config.mapResponse(result, state),
+                    })
+                  }
+                  else {
+                    return ({
+                      ...(m.isFetching in state ? {[m.isFetching]:false}: {}),
+                      [m.data]: result,
+                    })
+                  }
+                }
+              })
+              const failureAction = createAction(key+'/failure', {
+                container,
+                containerDb: db,
+                managers,
+                storeConfig: config,
+                dispatchWrapper: fn => fn(),
+                updateFn: config.actions[key],
+                onExecute: (config, error) => state => {
+                  const m = getM(config)
+                  const resetData = error.resetData
+                  return {
+                    ...(m.isFetching in state ? {[m.isFetching]:false}: {}),
+                    ...(m.fetchError in state ? {[m.fetchError]:error}: {}),
+                    [m.data]: resetData ?? state[m.data],
+                  }
+                }
+              })
+              container.store.addRule({
+                id: key,
+                target: `/${key}/request`,
+                concurrency: 'SWITCH',
+                consequence: args => result.fetcher(args.store.getState()).then(
+                  result => {
+                    args.effect(() => successAction(result, ...args.action.meta))
+                    if(args.action._promiseResolve) args.action._promiseResolve(true)
                   },
-                  container,
-                  db,
-                  cb
+                  error => {
+                    args.effect(() => {
+                      error.resetData = args.action._resetData
+                      failureAction(error, ...args.action.meta)
+                      delete error.resetData
+                    })
+                    if(args.action._promiseResolve) args.action._promiseResolve(false)
+                  },
                 )
               })
-              const updateFn = config.actions[key](...args)
-
-              if (typeof updateFn === "function") {
-                return dispatch(key, args[0], () => updateState(updateFn(container.state)))
-              } else {
-                return new Promise<boolean>(resolve => {
-                  const m = {
-                    data: updateFn.mappings?.data ?? 'data',
-                    isFetching: updateFn.mappings?.isFetching ?? 'isFetching',
-                    fetchError: updateFn.mappings?.fetchError ?? 'fetchError',
-                  }
-                  const requestPayload = updateFn.optimisticData
-                    ? updateFn.optimisticData(container.state)
-                    : undefined
-                  const prevData = container.state[m.data]
-                  dispatch(key+'/request', requestPayload, () => {
-                    updateState({
-                      ...(m.isFetching in container.state ? {[m.isFetching]:true}: {}),
-                      ...(m.fetchError in container.state ? {[m.fetchError]:null}: {}),
-                      [m.data]: requestPayload ?? prevData,
-                    })
-                    updateFn.fetcher(container.state).then(
-                      result => dispatch(key+'/success', result, () => {
-                        if(updateFn.mapResponse) {
-                          updateState({
-                            ...(m.isFetching in container.state ? {[m.isFetching]:false}: {}),
-                            ...updateFn.mapResponse(result, container.state),
-                          })
-                        }
-                        else {
-                          updateState({
-                            ...(m.isFetching in container.state ? {[m.isFetching]:false}: {}),
-                            [m.data]: result
-                          })
-                        }
-                        resolve(true)
-                      }),
-                      error => dispatch(key+'/failure', error, () => {
-                        updateState({
-                          ...(m.isFetching in container.state ? {[m.isFetching]:false}: {}),
-                          ...(m.fetchError in container.state ? {[m.fetchError]:error}: {}),
-                          ...(requestPayload ? {[m.data]:prevData} : {}),
-                        })
-                        resolve(false)
-                      })
-                    )
-                  })
-                })
-              }
             }
           }
 
@@ -160,63 +182,3 @@ export default function createStoreManager(
   }
 }
 
-
-
-
-// for(const key in config.actions) {
-//   const result = config.actions[key]()
-//   if(typeof result === 'function') {
-//     container.store[key] = function (...args: any[]) {
-//       const store = this as t.Store
-//       /** consequence can attach action execution */
-//       const wrapper = store.dispatchWrapper ?? ((fn) => fn())
-//       const dispatch = (key: string, payload: any, cb: any) => wrapper(() => {
-//         managers.rule.dispatch(
-//           {
-//             type: config.name + "/" + key,
-//             meta: args,
-//             payload,
-//           },
-//           container,
-//           db,
-//           cb
-//         )
-//       })
-//       const updateFn = config.actions[key](...args) as t.FunctionAction
-//       return dispatch(key, args[0], () => updateState(updateFn(container.state)))
-//     }
-//   }
-//   else {
-//     container.store.addRule({
-//       id: key,
-//       target: `/${key}/request`,
-//       consequence: args => result.fetcher(args.store.getState()).then(
-//         result => args.store[key+'/success'](result, args.action.meta[1]),
-//         error => args.store[key+'/failure'](error, args.action.meta[2]),
-//       )
-//     })
-//     container.store[key] = function (...args: any[]) {
-//       const store = this as t.Store
-//       const actionConfig = config.actions[key](...args) as t.AsyncActionConfig
-//       const requestPayload = actionConfig.optimisticData
-//           ? actionConfig.optimisticData(container.state)
-//           : undefined
-//       /** consequence can attach action execution */
-//       const wrapper = store.dispatchWrapper ?? ((fn) => fn())
-//       const dispatch = (key: string, payload: any, cb: any) => wrapper(() => {
-//         managers.rule.dispatch(
-//           {
-//             type: config.name + "/" + key + '/request',
-//             meta: args,
-//             payload: requestPayload,
-//           },
-//           container,
-//           db,
-//           cb
-//         )
-//       })
-//       // const updateFn = state => 
-//       return dispatch(key, args[0], () => updateState(updateFn(container.state)))
-//     }
-//   }
-// }
