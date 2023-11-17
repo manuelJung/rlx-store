@@ -1,4 +1,4 @@
-import { CreateStore, StoreConfig } from "../../index";
+import { ActionsType, CreateStore, StoreConfig } from "../../index";
 
 export type SimpleStoreState = {
   simpleNumber: number;
@@ -26,9 +26,11 @@ type NotAny<T> = T extends IsAny<T> ? never : T;
 type IsAny<T> = unknown extends T ? (T extends {} ? T : never) : never;
 
 const createStoreFactory = () => {
-  function createStore<Name, State, Action>(
-    cfg: StoreConfig<Name, State, Action>
-  ): CreateStore<State, Action> {
+  function createStore<
+    Name extends string,
+    State extends Record<string, unknown>,
+    Action extends ActionsType<State>
+  >(cfg: StoreConfig<Name, State, Action>): CreateStore<State, Action> {
     return {} as CreateStore<State, Action>;
   }
   return createStore;

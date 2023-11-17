@@ -3,13 +3,22 @@ declare global {
 }
 type StoreKeys = keyof RlxStores;
 
-export type StoreConfig<TName, TState, TAction> = {
+export type StoreConfig<
+  TName extends String,
+  TState extends Record<string, unknown>,
+  TActions extends ActionsType<TState>
+> = {
   name: TName;
   state: TState;
-  actions: TAction;
+  actions: TActions;
   key?: string;
   persist?: boolean;
 };
+
+export type ActionsType<State> = Record<
+  string,
+  (...payload: any) => (state: State) => any
+>;
 
 export type CreateStore<TState, TActions> = {
   getState: () => TState;

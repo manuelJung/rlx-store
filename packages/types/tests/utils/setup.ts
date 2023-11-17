@@ -1,4 +1,4 @@
-import { StoreConfig } from "../../index";
+import { ActionsType, StoreConfig } from "../../index";
 import { createStore } from "./utils";
 
 declare global {
@@ -11,7 +11,7 @@ declare global {
 export const simpleStore = createStore({
   name: "simpleStore",
   actions: {
-    simpleString: (s: string) => () => s,
+    simpleString: (s: string) => (state) => state.simpleString + "another",
     simpleNumber: (n: number) => () => n,
     simpleEmpty: () => () => {},
     simpleObject: (o: { simpleKeyString: string }) => () => o,
@@ -24,13 +24,17 @@ export const simpleStore = createStore({
   },
 });
 
-const useCompositeStore = <Name, State, Actions>(
+const useCompositeStore = <
+  Name extends string,
+  State extends Record<string, unknown>,
+  Actions extends ActionsType<State>
+>(
   config: StoreConfig<Name, State, Actions>
 ) => {
   return createStore({
-    name: config.name,
+    name: "",
     actions: {
-      compositeString: (s: string) => () => s,
+      compositeString: (s: string) => (s) => s,
       compositeNumber: (n: number) => () => n,
       compositeEmpty: () => () => {},
       compositeObject: (o: { compositeKeyString: string }) => () => o,
