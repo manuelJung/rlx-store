@@ -32,9 +32,9 @@ const useCompositeStore = <
   config: StoreConfig<Name, State, Actions>
 ) => {
   return createStore({
-    name: "",
+    name: "compositeStore",
     actions: {
-      compositeString: (s: string) => (s) => s,
+      compositeString: (s: string) => (state) => state,
       compositeNumber: (n: number) => () => n,
       compositeEmpty: () => () => {},
       compositeObject: (o: { compositeKeyString: string }) => () => o,
@@ -53,7 +53,7 @@ const useCompositeStore = <
 export const compositeStore = useCompositeStore({
   name: "compositeStore",
   actions: {
-    extendedCompositeString: (s: string) => () => s,
+    extendedCompositeString: (s: string) => (state) => state,
     extendedCompositeMultipleArgs: (s: string, n: number) => () => s + n,
   },
   state: {

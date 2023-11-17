@@ -30,7 +30,7 @@ const createStoreFactory = () => {
     Name extends string,
     State extends Record<string, unknown>,
     Action extends ActionsType<State>
-  >(cfg: StoreConfig<Name, State, Action>): CreateStore<State, Action> {
+  >(cfg: StoreConfig<Name, State, Action>) {
     return {} as CreateStore<State, Action>;
   }
   return createStore;
