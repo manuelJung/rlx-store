@@ -1,12 +1,12 @@
-import { ActionsType, StoreConfig } from "../../index";
+import { ActionsType, StoreConfig } from "../../src";
 import { createStore } from "./utils";
 
-declare global {
-  interface RlxStores {
-    simpleStore: typeof simpleStore;
-    compositeStore: typeof compositeStore;
-  }
-}
+// declare global {
+//   interface RlxStores {
+//     simpleStore: typeof simpleStore;
+//     compositeStore: typeof compositeStore;
+//   }
+// }
 
 export const simpleStore = createStore({
   name: "simpleStore",

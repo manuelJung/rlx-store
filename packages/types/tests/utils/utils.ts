@@ -1,4 +1,4 @@
-import { ActionsType, CreateStore, StoreConfig } from "../../index";
+import { ActionsType, CreateStore, StoreConfig } from "../../src/index";
 
 export type SimpleStoreState = {
   simpleNumber: number;

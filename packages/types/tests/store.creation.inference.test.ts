@@ -1,4 +1,4 @@
-import { ActionsType, StoreConfig } from "..";
+import { ActionsType, StoreConfig } from "../src";
 import {
   CompositeStoreState,
   SimpleStoreState,
