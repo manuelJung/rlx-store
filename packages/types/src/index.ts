@@ -17,14 +17,14 @@ export type StoreConfig<
 
 export type ActionsType<State> = Record<
   string,
-  (...payload: any) => (state: State) => any
+  (...payload: any) => (state: State) => Partial<State>
 >;
 
-export type CreateStore<TState, TActions> = {
+export type CreateStore<TState, TActions extends Record<string, unknown>> = {
   getState: () => TState;
   actions: TActions;
   addRule: <TTarget extends RuleTarget | RuleTarget[]>(
-    rule: Rule<TTarget, TState>
+    rule: Rule<TTarget, TState, TActions>
   ) => void;
   key?: string;
   subscribe: (cb: (state: TState) => void) => () => void;
@@ -44,8 +44,16 @@ type ActionKeys<TStore> = TStore extends { actions: infer TActions }
     : never
   : never;
 
-type Rule<TTarget extends RuleTarget | RuleTarget[], TState> = {
-  target: TTarget;
+type Rule<
+  TTarget extends RuleTarget | RuleTarget[],
+  TState,
+  TActions extends Record<string, unknown>
+> = {
+  target:
+    | TTarget
+    | keyof {
+        [K in keyof TActions as `/${Extract<K, string>}`]: TActions[K];
+      };
   consequence?: (args: ConsequenceArgs<TTarget, TState>) => void;
 };
 
