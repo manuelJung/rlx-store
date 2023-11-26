@@ -74,7 +74,7 @@ type ActionFunction<
   TActionname extends ActionNames<TStoreName>
 > = StoreActions<TStoreName>[TActionname];
 
-type ConsequenceArgs<
+export type ConsequenceArgs<
   TTarget extends RuleTarget | RuleTarget[],
   TState,
   TActions extends Record<string, unknown>
