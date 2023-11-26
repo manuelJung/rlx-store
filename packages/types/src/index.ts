@@ -28,6 +28,7 @@ export type Store<TState, TActions extends Record<string, unknown>> = {
   ) => void;
   key?: string;
   subscribe: (cb: (state: TState) => void) => () => void;
+  dispatchWrapper?: ((fn: any) => void) | undefined;
 };
 
 type RuleTarget = {
