@@ -3,7 +3,7 @@ import {
   Store as TypesStore,
   ConsequenceArgs as TypesConsequenceArgs,
   StoreConfig as TypesStoreConfig,
-} from "../src";
+} from "../src/types";
 import {
   Store as CoreStore,
   ConsequenceArgs as CoreConsequenceArgs,
