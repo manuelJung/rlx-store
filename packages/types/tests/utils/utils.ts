@@ -1,4 +1,4 @@
-import { ActionsType, CreateStore, StoreConfig } from "../../src/index";
+import { ActionsType, Store, StoreConfig } from "../../src/index";
 
 export type SimpleStoreState = {
   simpleNumber: number;
@@ -31,7 +31,7 @@ const createStoreFactory = () => {
     State extends Record<string, unknown>,
     Action extends ActionsType<State>
   >(cfg: StoreConfig<Name, State, Action>) {
-    return {} as CreateStore<State, Action>;
+    return {} as Store<State, Action>;
   }
   return createStore;
 };

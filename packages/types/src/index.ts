@@ -20,7 +20,7 @@ export type ActionsType<State> = Record<
   (...payload: any) => (state: State) => Partial<State>
 >;
 
-export type CreateStore<TState, TActions extends Record<string, unknown>> = {
+export type Store<TState, TActions extends Record<string, unknown>> = {
   getState: () => TState;
   actions: TActions;
   addRule: <TTarget extends RuleTarget | RuleTarget[]>(
@@ -54,7 +54,7 @@ type Rule<
     | keyof {
         [K in keyof TActions as `/${Extract<K, string>}`]: TActions[K];
       };
-  consequence?: (args: ConsequenceArgs<TTarget, TState>) => void;
+  consequence?: (args: ConsequenceArgs<TTarget, TState, TActions>) => void;
 };
 
 type StoreActions<TStoreName extends StoreKeys> =
@@ -75,14 +75,19 @@ type ActionFunction<
 
 type ConsequenceArgs<
   TTarget extends RuleTarget | RuleTarget[],
-  TState
+  TState,
+  TActions extends Record<string, unknown>
 > = TTarget extends RuleTarget[]
-  ? RuleTargetArrayArgs<TTarget, TState>
+  ? RuleTargetArrayArgs<TTarget, TState, TActions>
   : TTarget extends RuleTarget
-  ? SingleRuleTargetArgs<TTarget, TState>
+  ? SingleRuleTargetArgs<TTarget, TState, TActions>
   : never;
 
-type RuleTargetArrayArgs<TTargets extends RuleTarget[], TState> = {
+type RuleTargetArrayArgs<
+  TTargets extends RuleTarget[],
+  TState,
+  TActions extends Record<string, unknown>
+> = CommonRuleArgs<TState, TActions> & {
   action: {
     [TTarget in TTargets[number]]: {
       type: TTarget;
@@ -90,20 +95,32 @@ type RuleTargetArrayArgs<TTargets extends RuleTarget[], TState> = {
       meta: ExtractArgumentsType<
         ActionFunction<ExtractStoreName<TTarget>, ExtractActionName<TTarget>>
       >;
+      skipRule?: string | string[];
     };
   }[TTargets[number]];
-  getState: () => TState;
 };
 
-type SingleRuleTargetArgs<TTarget extends RuleTarget, TState> = {
+type SingleRuleTargetArgs<
+  TTarget extends RuleTarget,
+  TState,
+  TActions extends Record<string, unknown>
+> = CommonRuleArgs<TState, TActions> & {
   action: {
     type: TTarget;
     payload: ExtractFirstArgumentType<TTarget>;
     meta: ExtractArgumentsType<
       ActionFunction<ExtractStoreName<TTarget>, ExtractActionName<TTarget>>
     >;
+    skipRule?: string | string[];
   };
-  getState: () => TState;
+};
+
+type CommonRuleArgs<TState, TActions extends Record<string, unknown>> = {
+  store: Store<TState, TActions>;
+  wasCanceled: () => boolean;
+  effect: (fn: (...args: any[]) => void) => void;
+  getStore: (name: string, key?: string) => Store<TState, TActions> | null;
+  getStores: (name: string) => Store<TState, TActions>[];
 };
 
 type ExtractFirstArgumentType<TTarget extends string> =
