@@ -11,11 +11,19 @@ declare global {
 export const simpleStore = createStore({
   name: "simpleStore",
   actions: {
-    simpleString: (s: string) => (state) => state.simpleString + "another",
-    simpleNumber: (n: number) => () => n,
-    simpleEmpty: () => () => {},
-    simpleObject: (o: { simpleKeyString: string }) => () => o,
-    simpleMultipleArgs: (s: string, n: number) => () => s + n,
+    simpleString: (s: string) => (state) => ({
+      simpleString: state.simpleString + s,
+    }),
+    simpleNumber: (n: number) => (state) => ({
+      simpleNumber: state.simpleNumber + n,
+    }),
+    simpleEmpty: () => (state) => state,
+    simpleObject: (o: { simpleKeyString: string }) => (state) => ({
+      simpleObject: { simpleKeyString: o.simpleKeyString },
+    }),
+    simpleMultipleArgs: (s: string, n: number) => (state) => ({
+      simpleNumber: n,
+    }),
   },
   state: {
     simpleNumber: 0,
@@ -24,22 +32,28 @@ export const simpleStore = createStore({
   },
 });
 
-const useCompositeStore = <
+const createCompositeStore = <
   Name extends string,
   State extends Record<string, unknown>,
   Actions extends ActionsType<State>
 >(
   config: StoreConfig<Name, State, Actions>
 ) => {
-  return createStore({
-    name: "compositeStore",
+  const store = createStore({
+    name: config.name,
     actions: {
-      compositeString: (s: string) => (state) => state,
-      compositeNumber: (n: number) => () => n,
-      compositeEmpty: () => () => {},
-      compositeObject: (o: { compositeKeyString: string }) => () => o,
-      compositeMultipleArgs: (s: string, n: number) => () => s + n,
-      ...config.actions,
+      compositeString: (s: string) => (state) => ({
+        ...state,
+        compositeString: state.compositeString,
+      }),
+      compositeNumber: (n: number) => (state) => ({
+        ...state,
+        compositeNumber: n,
+      }),
+      compositeEmpty: () => (state) => state,
+      compositeObject: (o: { compositeKeyString: string }) => (state) => state,
+      compositeMultipleArgs: (s: string, n: number) => (state) => state,
+      ...(config.actions as ActionsType<State>),
     },
     state: {
       compositeNumber: 0,
@@ -48,13 +62,20 @@ const useCompositeStore = <
       ...config.state,
     },
   });
+
+  store.addRule({
+    target: "/compositeObject",
+    consequence: (args) => args.action,
+  });
+
+  return store;
 };
 
-export const compositeStore = useCompositeStore({
+export const compositeStore = createCompositeStore({
   name: "compositeStore",
   actions: {
     extendedCompositeString: (s: string) => (state) => state,
-    extendedCompositeMultipleArgs: (s: string, n: number) => () => s + n,
+    extendedCompositeMultipleArgs: (s: string, n: number) => (state) => state,
   },
   state: {
     extendedCompositeState: null,

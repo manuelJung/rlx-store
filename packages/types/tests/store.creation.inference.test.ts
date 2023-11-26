@@ -17,6 +17,7 @@ export const simpleStore = createStore({
       notAny(state);
       // @ts-expect-error: as state should not be of type never
       expectNever(state);
+      return state;
     },
   },
   state: {
@@ -26,7 +27,7 @@ export const simpleStore = createStore({
   },
 });
 
-const useCompositeStore = <
+const createCompositeStore = <
   Name extends string,
   State extends Record<string, unknown>,
   Actions extends ActionsType<State>
@@ -42,6 +43,7 @@ const useCompositeStore = <
         const test: Omit<CompositeStoreState, "extendedCompositeState"> = state;
         // @ts-expect-error: as state should not be of type never
         expectNever(state);
+        return state;
       },
     },
     state: {
@@ -53,7 +55,7 @@ const useCompositeStore = <
   });
 };
 
-export const compositeStore = useCompositeStore({
+export const compositeStore = createCompositeStore({
   name: "compositeStore",
   actions: {
     testAction: (s: string) => (state) => {
@@ -64,6 +66,7 @@ export const compositeStore = useCompositeStore({
       } = state;
       // @ts-expect-error: as state should not be of type never
       expectNever(state);
+      return state;
     },
   },
   state: {
