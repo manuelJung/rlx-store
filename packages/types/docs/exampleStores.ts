@@ -34,7 +34,7 @@
 //   }
 // }
 
-// const useCompositeStore = <
+// const createCompositeStore = <
 //   Name extends string,
 //   State extends Record<string, unknown>,
 //   Actions extends ActionsType<State>
@@ -45,7 +45,7 @@
 //     name: "compositeStore",
 //     actions: {
 //       compositeNumber: (n: number) => (state) => state,
-//       ...config.actions,
+//       ...(config.actions as ActionsType<State>),
 //     },
 //     state: {
 //       compositeNumber: 0,
@@ -54,10 +54,10 @@
 //   });
 // };
 
-// export const compositeStore = useCompositeStore({
+// export const compositeStore = createCompositeStore({
 //   name: "compositeStore",
 //   actions: {
-//     extendedCompositeString: (s: string) => (state) => state,
+//     extendedCompositeString: () => (state) => state,
 //   },
 //   state: {
 //     extendedCompositeState: null,

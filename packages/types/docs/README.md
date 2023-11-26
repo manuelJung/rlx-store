@@ -99,7 +99,7 @@ This approach requires a bit more configuration to fully benefit from the type s
 ```javascript
 import { ActionsType, StoreConfig } from "rlx-store";
 
-const useCompositeStore = <
+const createCompositeStore = <
   Name extends string,
   State extends Record<string, unknown>,
   Actions extends ActionsType<State>
@@ -109,7 +109,7 @@ const useCompositeStore = <
   return createStore({
     name: "compositeStore",
     actions: {
-      compositeNumber: (n: number) => () => n,
+      compositeNumber: (n: number) => (state) => state.compositeNumber++,
       ...config.actions,
     },
     state: {
@@ -119,10 +119,11 @@ const useCompositeStore = <
   });
 };
 
-export const compositeStore = useCompositeStore({
+export const compositeStore = createCompositeStore({
   name: "compositeStore",
   actions: {
-    extendedCompositeString: (s: string) => (state) => state,
+    extendedCompositeString: (s: string) => (state) => 
+      ({state.extendedCompositeState = s}),
   },
   state: {
     extendedCompositeState: null,
@@ -141,6 +142,6 @@ Within the creation of the actions in the `createStore` configuration, the state
 
 ![composite-store-creation-inference](images/composite-store-creation-inference.png)
 
-The same applies to the use of `useCompositeStore` in the case when it is used to create a new store, the state is also only of the type of the currently created/extending store.
+The same applies to the use of `createCompositeStore` in the case when it is used to create a new store, the state is also only of the type of the currently created/extending store.
 
 ![composite-store-extention-inference.png](images/composite-store-extention-inference.png)
