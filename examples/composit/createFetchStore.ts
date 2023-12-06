@@ -4,7 +4,7 @@ export default function createFetchStore<T, F = void, O = void>(config:any) {
   const store = createStore({
     ...config,
     state: {
-      data: null as T | null,
+      hits: null as T | null,
       isFetching: false,
       fetchError: null as null | string,
       hasFetched: false,
@@ -13,6 +13,14 @@ export default function createFetchStore<T, F = void, O = void>(config:any) {
       ...config.state,
     },
     actions: {
+      fetch: (payload) => createAsync({
+        mappings: {data: 'hits'},
+        fetcher: state => config.fetchFn(payload),
+        mapResponse: result => ({
+          hits: result.hits,
+          filterOptions: result.filterOptions,
+        })
+      }),
       fetchRequest: (payload:F) => state => ({
         isFetching: true,
         fetchError: null,

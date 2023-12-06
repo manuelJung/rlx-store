@@ -35,6 +35,13 @@ export default function createProductList (key:string) {
         lense: ['filterValues', 'query'],
         updater: () => query,
       }),
+      setPage2: (page:number) => state => ({
+        ...state,
+        filterValues: {
+          ...state.filterValues,
+          page: page,
+        }
+      }),
       setPage: (page:number) => ({
         lense: 'filterValues',
         updater: filterValues => ({...filterValues, page}),
