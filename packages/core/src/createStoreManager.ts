@@ -20,6 +20,7 @@ export default function createStoreManager(
           subscriptions: [],
           events: createEventContainer(),
           store: args.injectFramework({
+            actions: {},
             name: config.name,
             key: config.key,
             getState: () => container.state,
@@ -40,7 +41,7 @@ export default function createStoreManager(
           const actionBaseArgs = { container, containerDb: db, managers, storeConfig: config}
           const actionReturn = config.actions[key]()
           if(typeof actionReturn === 'function') {
-            container.store[key] = createAction(key, {
+            container.store.actions[key] = createAction(key, {
               ...actionBaseArgs,
               updateFn: config.actions[key],
             })
@@ -52,7 +53,7 @@ export default function createStoreManager(
               isFetching: config.mappings?.isFetching ?? 'isFetching',
               fetchError: config.mappings?.fetchError ?? 'fetchError',
             })
-            container.store[key] = createAction(key+'/request', {
+            container.store.actions[key] = createAction(key+'/request', {
               ...actionBaseArgs,
               updateFn: config.actions[key],
               isRequestStage: true,
@@ -130,7 +131,7 @@ export default function createStoreManager(
                 id: key + '/on-mount',
                 target: `/@mount`,
                 output: `/${key}/request`,
-                consequence: args => args.store[key]()
+                consequence: args => args.store.actions[key]()
               })
             }
           }

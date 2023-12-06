@@ -12,7 +12,7 @@ describe('store -> async action config', () => {
       }
     })
 
-    const result = await store.increment(1)
+    const result = await store.actions.increment(1)
 
     expect(result).toBe(true)
 
@@ -47,7 +47,7 @@ describe('store -> async action config', () => {
       }
     })
 
-    const result = await store.increment()
+    const result = await store.actions.increment()
 
     expect(result).toBe(false)
 
@@ -80,7 +80,7 @@ describe('store -> async action config', () => {
       }
     })
 
-    const promise = store.increment()
+    const promise = store.actions.increment()
 
     expect(store.getState().isFetchingNew).toBe(true)
     expect(store.getState().dataNew).toBe(null)
@@ -106,7 +106,7 @@ describe('store -> async action config', () => {
       }
     })
 
-    const result = await store.increment()
+    const result = await store.actions.increment()
 
     expect(result).toBe(true)
     expect(store.getState().data).toBe('result')
@@ -127,7 +127,7 @@ describe('store -> async action config', () => {
       }
     })
 
-    const request = store.increment()
+    const request = store.actions.increment()
 
     expect(store.getState().data).toBe('optimistic')
 
@@ -151,7 +151,7 @@ describe('store -> async action config', () => {
       }
     })
 
-    const request = store.increment()
+    const request = store.actions.increment()
 
     expect(store.getState().data).toBe('optimistic')
 

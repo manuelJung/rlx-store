@@ -20,7 +20,7 @@ describe('rule -> consequence', () => {
         }
       })
 
-      store.myAction('id')
+      store.actions.myAction('id')
 
       expect(action).toEqual({
         type: 'test/myAction',
@@ -46,11 +46,14 @@ describe('rule -> consequence', () => {
         }
       })
 
-      store.myAction('id')
+      store.actions.myAction('id')
 
       expect(consequenceStore).toEqual({
         ...store,
-        dispatchWrapper: expect.anything()
+        actions: {
+          ...store.actions,
+          dispatchWrapper: expect.anything()
+        }
       })
     })
   
@@ -77,7 +80,7 @@ describe('rule -> consequence', () => {
         }
       })
 
-      store.myAction('id')
+      store.actions.myAction('id')
 
       expect(consequenceStoreFound).toEqual({
         ...store,
@@ -106,7 +109,7 @@ describe('rule -> consequence', () => {
         }
       })
 
-      store.myAction('id')
+      store.actions.myAction('id')
 
       expect(consequenceStoreFound).toEqual([{
         ...store,
@@ -126,17 +129,17 @@ describe('rule -> consequence', () => {
         otherAction: (id:string) => state => state,
       }
     })
-    store.myAction = jest.fn(store.myAction)
-    store.otherAction = jest.fn(store.otherAction)
+    store.actions.myAction = jest.fn(store.actions.myAction)
+    store.actions.otherAction = jest.fn(store.actions.otherAction)
     store.addRule({
       id: 'effect',
       target: 'test/myAction',
-      consequence: ({store}) => store.otherAction('bar'),
+      consequence: ({store}) => store.actions.otherAction('bar'),
     })
 
-    store.myAction('foo')
-    expect(store.myAction).toBeCalledWith('foo')
-    expect(store.otherAction).toBeCalledWith('bar')
+    store.actions.myAction('foo')
+    expect(store.actions.myAction).toBeCalledWith('foo')
+    expect(store.actions.otherAction).toBeCalledWith('bar')
   })
 
   it.skip('can manipulate actions by returning action (with position INSTEAD)', () => {
@@ -160,7 +163,7 @@ describe('rule -> consequence', () => {
       })
     })
 
-    store.myAction('foo')
+    store.actions.myAction('foo')
 
     expect(store.getState()).toBe('bar')
   })
@@ -185,11 +188,11 @@ describe('rule -> consequence', () => {
       }
     })
 
-    store.myAction('first')
+    store.actions.myAction('first')
 
     expect(cb).not.toBeCalled()
 
-    store.myAction('second')
+    store.actions.myAction('second')
 
     expect(cb).toBeCalledWith('first')
   })

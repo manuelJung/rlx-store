@@ -77,14 +77,15 @@ export const createAction = (key:string, config:{
     for (const fn of config.container.subscriptions) fn(config.container.state)
   }
   /** 
-   * we need a function to capture the this object which can point to a modified store-version
-   * which can implement the "dispatchWrapper" function
+   * we need a function to capture the "this" object which can point to a modified store-version
+   * which can implement the "dispatchWrapper" effect function from consequence
+   * so the action can be canceled by consequence
    */
   return function (...args:any[]) {
-    const store = this as Store
+    const actions = this as Store['actions']
     let promise:Promise<boolean>|null = null
     /** consequence can attach action execution */
-    const effect = config.dispatchWrapper ?? store.dispatchWrapper ?? ((fn) => fn())
+    const effect = config.dispatchWrapper ?? actions.dispatchWrapper ?? ((fn) => fn())
     const state = config.container.state
 
     if(config.onExecute) {

@@ -52,11 +52,12 @@ export type Store = {
   subscribe: (cb:(state:any)=>void) => () => void
   addRule: (rule:Rule) => void
   dispatchWrapper?: (fn:any) => void
+  actions: Record<string, (...args:any[]) => any>
 }
 
 export type StoreContainer = {
   id: string
-  store: Store & Record<string, any>
+  store: Store
   state: any
   numParents: number
   events: ReturnType<typeof createEventContainer<StoreEvent>>
@@ -108,14 +109,14 @@ export type RuleContainer = {
 
 export type ConditionArgs = {
   action: Action
-  store: Store & Record<string, any>
+  store: Store
   getStore: (name:string, key?:string) => Store | null
   getStores: (name:string) => Store[]
 }
 
 export type ConsequenceArgs = {
   action: Action
-  store: Store & Record<string, any>
+  store: Store
   wasCanceled: () => boolean
   effect: (fn:(...args:any[])=>void) => void
   getStore: (name:string, key?:string) => Store | null

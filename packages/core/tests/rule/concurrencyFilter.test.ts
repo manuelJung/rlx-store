@@ -26,7 +26,7 @@ describe('rule -> concurrencyFilter', () => {
       consequence: () => {},
     })
 
-    store.myAction('id')
+    store.actions.myAction('id')
     
 
     expect(action).toEqual({
@@ -54,14 +54,14 @@ describe('rule -> concurrencyFilter', () => {
       concurrencyFilter: action => action.meta[1],
       consequence: async({store, action}) => {
         await wait(10)
-        store.otherAction(action.payload)
+        store.actions.otherAction(action.payload)
       },
     })
 
-    store.myAction('first a', 'a')
-    store.myAction('second a', 'a')
-    store.myAction('first b', 'b')
-    store.myAction('second b', 'b')
+    store.actions.myAction('first a', 'a')
+    store.actions.myAction('second a', 'a')
+    store.actions.myAction('first b', 'b')
+    store.actions.myAction('second b', 'b')
     await wait(20)
 
     expect(store.getState()).toEqual(['first a', 'first b'])

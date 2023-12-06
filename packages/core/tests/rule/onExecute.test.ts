@@ -16,8 +16,8 @@ describe('rule -> onExecute', () => {
       consequence
     })
 
-    store.foo()
-    store.foo()
+    store.actions.foo()
+    store.actions.foo()
 
     expect(consequence).toBeCalledTimes(1)
   })
@@ -40,8 +40,8 @@ describe('rule -> onExecute', () => {
       }
     })
 
-    store.foo()
-    store.foo()
+    store.actions.foo()
+    store.actions.foo()
 
     await new Promise(r => setTimeout(r, 20))
 

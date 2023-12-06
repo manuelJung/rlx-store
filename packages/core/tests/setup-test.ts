@@ -48,7 +48,7 @@ export default function setupTest (config:Config={}) {
         actions: {},
         state: null,
         ...storeConfig,
-      }) as ReturnType<typeof createStore> & Record<string, (...args:any[]) => any>
+      }) as ReturnType<typeof createStore>
 
       if(!config.preventAutoMount) mountFnRef.current()
 

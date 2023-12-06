@@ -19,8 +19,8 @@ describe('rule -> throttle, debounce, delay', () => {
       consequence,
     })
 
-    store.myAction()
-    store.myAction()
+    store.actions.myAction()
+    store.actions.myAction()
     expect(consequence).toBeCalledTimes(0)
 
     await wait(20)
@@ -43,17 +43,17 @@ describe('rule -> throttle, debounce, delay', () => {
       target: 'test/myAction',
       throttle: 30,
       consequence: ({store, action}) => {
-        store.otherAction(action.payload)
+        store.actions.otherAction(action.payload)
       },
     })
 
-    store.myAction(1) // 0
+    store.actions.myAction(1) // 0
     await wait(10)  
-    store.myAction(2) // 10
+    store.actions.myAction(2) // 10
     await wait(10)
-    store.myAction(3) // 20
+    store.actions.myAction(3) // 20
     await wait(20)
-    store.myAction(4) // 40
+    store.actions.myAction(4) // 40
     await wait(50)  // 90
 
     expect(store.getState()).toEqual([3,4])
@@ -75,17 +75,17 @@ describe('rule -> throttle, debounce, delay', () => {
       target: 'test/myAction',
       debounce: 30,
       consequence: ({store, action}) => {
-        store.otherAction(action.payload)
+        store.actions.otherAction(action.payload)
       },
     })
 
-    store.myAction(1) // 0
+    store.actions.myAction(1) // 0
     await wait(10)  
-    store.myAction(2) // 10
+    store.actions.myAction(2) // 10
     await wait(10)
-    store.myAction(3) // 20
+    store.actions.myAction(3) // 20
     await wait(50)
-    store.myAction(4) // 70
+    store.actions.myAction(4) // 70
     await wait(50)  // 120
 
     expect(store.getState()).toEqual([3,4])

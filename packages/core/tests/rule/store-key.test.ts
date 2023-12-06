@@ -27,10 +27,10 @@ describe('rule -> store.key', () => {
     const store1 = createStore('first')
     const store2 = createStore('second')
 
-    store1.myAction('a')
-    store1.myAction('b')
-    store2.myAction('a')
-    store2.myAction('b')
+    store1.actions.myAction('a')
+    store1.actions.myAction('b')
+    store2.actions.myAction('a')
+    store2.actions.myAction('b')
 
     expect(cb).toBeCalledTimes(2)
     expect(cb).toBeCalledWith('first', 'a')

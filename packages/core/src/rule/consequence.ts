@@ -173,7 +173,10 @@ export default function consequence (
     effect,
     store: {
       ...actionExecution.storeContainer.store,
-      dispatchWrapper: effect,
+      actions: {
+        ...actionExecution.storeContainer.store.actions,
+        dispatchWrapper: effect,
+      } as Record<string, any>
     } satisfies t.Store,
     getStore,
     getStores,

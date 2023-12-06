@@ -32,7 +32,7 @@ describe('store -> name', () => {
       name: 'my-name',
       actions: { test: () => () => null }
     })
-    store.test()
+    store.actions.test()
     expect(c.managers.rule.dispatch).toBeCalledWith(expect.objectContaining({
       action: {type:'my-name/test', meta: [], payload: undefined},
     }))

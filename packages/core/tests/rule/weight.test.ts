@@ -21,7 +21,7 @@ describe('rule -> weight', () => {
       target: 'my-name/foo',
     })
 
-    store.foo()
+    store.actions.foo()
     expect(list).toEqual(['b', 'a'])
   })
 
@@ -44,7 +44,7 @@ describe('rule -> weight', () => {
       target: 'my-name/foo',
     })
 
-    store.foo()
+    store.actions.foo()
     expect(list).toEqual(['b', 'a'])
   })
 })

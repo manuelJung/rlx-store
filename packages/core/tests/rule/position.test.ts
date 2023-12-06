@@ -18,7 +18,7 @@ describe('rule -> position', () => {
     })
 
     expect(store.getState()).toBe(0)
-    store.foo()
+    store.actions.foo()
     expect(store.getState()).toBe(1)
   })
 
@@ -39,7 +39,7 @@ describe('rule -> position', () => {
     })
 
     expect(store.getState()).toBe(0)
-    store.foo()
+    store.actions.foo()
     expect(store.getState()).toBe(1)
   })
 
@@ -60,7 +60,7 @@ describe('rule -> position', () => {
     })
 
     expect(store.getState()).toBe(0)
-    store.foo()
+    store.actions.foo()
     expect(store.getState()).toBe(0)
   })
 })
