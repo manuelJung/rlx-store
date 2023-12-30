@@ -50,6 +50,7 @@ export default function createStoreManager (args:t.FactoryArgs, managers:t.Manag
                 () => {
                   const updateFn = config.actions[key](...args)
                   container.state = updateFn(container.state)
+                  container.subscriptions.length > 0 && container.subscriptions.forEach(fn => fn(container.state))
                 },
               )
             })
