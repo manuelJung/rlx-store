@@ -15,7 +15,6 @@ export default function setupTest (config:Config={}) {
   }
   const createStore = factory({
     injectFramework: store => store,
-    getInstanceId: () => config.instanceId ?? '',
     onDestroy: cb => {
       destroyFnRef.current = () => cb()
     },

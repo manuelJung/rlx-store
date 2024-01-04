@@ -6,12 +6,11 @@ export default function createStoreManager(
   managers: t.Managers
 ) {
   const db = new Map<string, t.StoreContainer>()
-  let keyCounter = 1
 
   return {
     db,
     create: (config: t.StoreConfig) => {
-      const storeId = config.name + (config.key ?? args.getInstanceId(() => `${keyCounter++}`))
+      const storeId = config.name + (config.key ?? '')
       const container = db.get(storeId) ?? (() => {
         const container: t.StoreContainer = {
           id: storeId,

@@ -14,7 +14,6 @@ export type Managers = {
 
 export type FactoryArgs = {
   injectFramework: (store:Store) => Store
-  getInstanceId: (createId:()=>string) => string
   onMount: (cb:()=>void) => void
   onDestroy: (cb:()=>void) => void
 }

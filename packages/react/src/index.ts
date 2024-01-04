@@ -10,7 +10,6 @@ export default createStoreFactory({
       return state
     }
   }),
-  getInstanceId: (createId) => React.useState(createId)[0],
   onMount: cb => { React.useEffect(cb, []) },
   onDestroy: cb => { React.useEffect(() => cb, []) },
 })

@@ -1,9 +1,12 @@
 import * as React from 'react'
-import salutationStore from '../stores/saluationList'
+import createSalutationStore from '../stores/salutationList2'
 
 export function SalutationList () {
-  const store = salutationStore()
-  const list = store.useState()
+  const store = createSalutationStore()
+  const mr = store.useSalutation('123')
+  const list = store.useState() // updates everytime state changes
+  const isFetching1 = store.useState(state => state.isFetching) // shallow equal
+  const isFetching2 = store.useState(state => state.isFetching, state => [state.isFetching]) // updater
 
   if(list.isFetching) return <div>loading...</div>
 
@@ -12,7 +15,7 @@ export function SalutationList () {
   return (
     <div>
       <h2>Salutations</h2>
-      {list.list.map(item => <div key={item.id}>{item.label}</div>)}
+      {list.data.map(item => <div key={item.id}>{item.label}</div>)}
     </div>
   )
 }
