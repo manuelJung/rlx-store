@@ -3,10 +3,23 @@ import createSalutationStore from '../stores/salutationList2'
 
 export function SalutationList () {
   const store = createSalutationStore()
-  const mr = store.useSalutation('123')
+  const [filterKey, setFilterKey] = React.useState('color')
+  // const mr = store.useSalutation('123')
   const list = store.useState() // updates everytime state changes
   const isFetching1 = store.useState(state => state.isFetching) // shallow equal
   const isFetching2 = store.useState(state => state.isFetching, state => [state.isFetching]) // updater
+
+  const listing = useListingStore()
+
+  const filter = listing.useState(state => ({
+    value: state.filterValues.facets[filterKey],
+    options: state.filterOptions.facets[filterKey].map(color => ({
+      value: color,
+      selected: state.filterValues.facets[color].includes(color)
+    }))
+  }),
+  state => [state.filterValues.facets[filterKey], state.filterOptions.facets[filterKey]]
+  )
 
   if(list.isFetching) return <div>loading...</div>
 
