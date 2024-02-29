@@ -1,4 +1,5 @@
 const createStore:any = null
+const createTrackingStore:any = null
 
 type User = {
   name: string
@@ -8,6 +9,7 @@ type User = {
 type LoginErrorCode = 'INVALID_CREDENTIALS' | '500'
 
 export default function createAccountStore () {
+  const trackingStore = createTrackingStore()
   const store = createStore({
     name: 'account',
     state: {
@@ -32,6 +34,18 @@ export default function createAccountStore () {
         fetcher: logout,
         mapResponse: () => ({ user: null }),
       }),
+    }
+  })
+
+  store.addRule({
+    id: 'tracking',
+    target: ['/login', '/logout'],
+    consequence: ({action}) => {
+      if (action === 'login') {
+        trackingStore.push('login')
+      } else {
+        trackingStore.push('logout')
+      }
     }
   })
 
