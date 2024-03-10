@@ -1,13 +1,18 @@
 import React from 'react'
 import createStoreFactory from '@rlx/core'
-import { StoreConfig } from '@rlx/core/src/types'
 
 const createStore = createStoreFactory({
   injectFramework: store => ({
     ...store,
-    useStateValue: () => {
-      const [state, setState] = React.useState(store.getState)
-      React.useEffect(() => store.subscribe(setState), [])
+    // TODO add custom comparison function as second argument
+    useState: (selector = defaultSelector) => {
+      const [state, setState] = React.useState(selector(store.getState))
+      React.useEffect(() => store.subscribe((newState) => {
+        if (isShallowEqual(state, selector(newState))) {
+          return;
+        }
+        setState(selector(newState))
+      }), [])
       return state
     }
   }),
@@ -18,19 +23,59 @@ const createStore = createStoreFactory({
 
 export default createStore;
 
-/**
- * @param config 
- * @returns A tuple of state and the corresponing store - [state, store]
- */
-export function useStore(config: StoreConfig) {
-  const store = React.useMemo(() => createStore(config), [config])
-  
-  const [state, setState] = React.useState(store.getState)
-  
-  React.useEffect(() => {
-    const unsubscribe = store.subscribe(setState)
-    return unsubscribe
-  }, [])
+function defaultSelector(state: any) {
+  return state;
+}
 
-  return [state, store]
+function isShallowEqual(a: any, b: any): boolean {
+  if (a === b) return true;
+
+  if (!a || !b) {
+    return false;
+  }
+
+  const aIsArr = Array.isArray(a);
+  const bIsArr = Array.isArray(b);
+
+  if (aIsArr !== bIsArr) {
+    return false;
+  }
+  // array comparison
+  if (aIsArr && bIsArr) {
+    const len = a.length;
+  
+    if (b.length !== len) {
+      return false;
+    }
+  
+    for (let i = 0; i < len; i++) {
+      if (a[i] !== b[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // object comparison
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  const len = aKeys.length;
+
+  if (bKeys.length !== len) {
+    return false;
+  }
+
+  for (let i = 0; i < len; i++) {
+    const key = aKeys[i];
+
+    if (
+      a[key] !== b[key] ||
+      !Object.prototype.hasOwnProperty.call(b, key)
+    ) {
+      return false;
+    }
+  }
+
+  return true;
 }

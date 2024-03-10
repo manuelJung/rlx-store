@@ -70,6 +70,13 @@ function MyComponent() {
 
 Due to the fact that the `createStore` function always returns the same store object, we can use the `useStore` hook in multiple components and they will always share the same store, but will be updated based on state changes due to their own `setState` functions, which are passed to the subscriptions of the store.
 
+#### Remarks from discussion
+
+Selectors should be implemented to prevent components that only listen to part of the state to be rerendered when the state changes. This should be done by a technique that is similiar to depency arrays in React. So that the developer is responsible for providing the correct information to the library.
+(Refer to ReReSelect for API)
+
+- Maybe we can use useReducer to trigger specific updates in specific components
+
 #### Pros
 - Easy to implement
 - The way React works
