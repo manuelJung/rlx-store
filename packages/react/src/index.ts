@@ -4,16 +4,27 @@ import createStoreFactory from '@rlx/core'
 const createStore = createStoreFactory({
   injectFramework: store => ({
     ...store,
-    // TODO add custom comparison function as second argument
-    useState: (selector = defaultSelector) => {
+    useState: (selector = defaultSelector, equalityFn) => {
+      const equalityCache = equalityFn ? equalityFn(store.getState()) : null
+      const cacheRef = React.useRef(equalityCache)
+      cacheRef.current = equalityCache
+
       const [state, setState] = React.useState(() => selector(store.getState))
+
       React.useEffect(() => store.subscribe((newState) => {
         const newSelectedState = selector(newState)
-        if (isShallowEqual(state, newSelectedState)) {
+        if (!equalityFn) {
+          if (isShallowEqual(state, newSelectedState)) {
+            return;
+          }
+          return setState(newSelectedState)
+        }
+        if (isShallowEqual(cacheRef.current, equalityFn(newState))) {
           return;
         }
         setState(newSelectedState)
       }), [])
+
       return state
     }
   }),
@@ -23,7 +34,7 @@ const createStore = createStoreFactory({
 })
 
 export default createStore;
-// identity function
+
 function defaultSelector(state: any) {
   return state;
 }
