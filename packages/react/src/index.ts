@@ -6,12 +6,13 @@ const createStore = createStoreFactory({
     ...store,
     // TODO add custom comparison function as second argument
     useState: (selector = defaultSelector) => {
-      const [state, setState] = React.useState(selector(store.getState))
+      const [state, setState] = React.useState(() => selector(store.getState))
       React.useEffect(() => store.subscribe((newState) => {
-        if (isShallowEqual(state, selector(newState))) {
+        const newSelectedState = selector(newState)
+        if (isShallowEqual(state, newSelectedState)) {
           return;
         }
-        setState(selector(newState))
+        setState(newSelectedState)
       }), [])
       return state
     }
@@ -22,7 +23,7 @@ const createStore = createStoreFactory({
 })
 
 export default createStore;
-
+// identity function
 function defaultSelector(state: any) {
   return state;
 }
