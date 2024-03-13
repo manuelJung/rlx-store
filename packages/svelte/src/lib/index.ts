@@ -1,14 +1,15 @@
 import { onMount, onDestroy } from "svelte";
 import { writable } from "svelte/store";
+import type { Writable } from "svelte/store";
 import createStoreFactory from "@rlx/core";
-import { Store, StoreConfig, ActionsType } from "@rlx/types";
+import type { Store, StoreConfig, ActionsType } from "@rlx/types";
 
 export default createStoreFactory({
-  injectFramework: (store) => ({
+  injectFramework: (store:any) => ({
     ...store,
     useState: () => {
       const state = writable(store.getState());
-      store.subscribe((newState) => state.set(newState));
+      store.subscribe((newState:any) => state.set(newState));
       return state;
     },
   }),
@@ -20,6 +21,7 @@ export default createStoreFactory({
   Action extends ActionsType<State>
 >(
   cfg: StoreConfig<Name, State, Action>
-) => Store<State, Action>;
+) => Store<State, Action> & {
+  useState: () => Writable<State>;
+};
 
-export { Store, StoreConfig, ActionsType };

@@ -136,39 +136,42 @@ export default function createStoreManager(
           }
         }
 
-        args.onMount(() => {
-          container.numParents++
-          managers.rule.dispatch({
-            action: {
-              type: config.name + "/@mount",
-              meta: [],
-              payload: null,
-            },
-            storeContainer: container,
-            storeDb: db,
-            cb: () => null
+        // on server we do not need to subscribe to the store
+        if(typeof window !== 'undefined') {
+          args.onMount(() => {
+            container.numParents++
+            managers.rule.dispatch({
+              action: {
+                type: config.name + "/@mount",
+                meta: [],
+                payload: null,
+              },
+              storeContainer: container,
+              storeDb: db,
+              cb: () => null
+            })
+            container.events.trigger({ type: "MOUNT" })
           })
-          container.events.trigger({ type: "MOUNT" })
-        })
-
-        args.onDestroy(() => {
-          container.numParents--
-          managers.rule.dispatch({
-            action: {
-              type: config.name + "/@destroy",
-              meta: [],
-              payload: null,
-            },
-            storeContainer: container,
-            storeDb: db,
-            cb: () => null
+  
+          args.onDestroy(() => {
+            container.numParents--
+            managers.rule.dispatch({
+              action: {
+                type: config.name + "/@destroy",
+                meta: [],
+                payload: null,
+              },
+              storeContainer: container,
+              storeDb: db,
+              cb: () => null
+            })
+  
+            if (container.numParents === 0 && !config.persist) {
+              container.events.trigger({ type: "DESTROY" })
+              db.delete(storeId)
+            }
           })
-
-          if (container.numParents === 0 && !config.persist) {
-            container.events.trigger({ type: "DESTROY" })
-            db.delete(storeId)
-          }
-        })
+        }
 
         db.set(storeId, container)
         managers.events.trigger({ type: "REGISTER_STORE", container })
