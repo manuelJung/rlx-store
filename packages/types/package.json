@@ -4,7 +4,13 @@
   "author": "",
   "license": "ISC",
   "type": "module",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "esbuild": "^0.19.4",
+    "typescript": "^5.1.6"
+  },
   "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=neutral --outdir=dist --main-fields=main && tsc",
     "type-check": "tsc"
   }
 }

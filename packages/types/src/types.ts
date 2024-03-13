@@ -50,12 +50,13 @@ type Rule<
   TState,
   TActions extends Record<string, unknown>
 > = {
+  id: string;
   target:
     | TTarget
     | keyof {
         [K in keyof TActions as `/${Extract<K, string>}`]: TActions[K];
       };
-  consequence?: (args: ConsequenceArgs<TTarget, TState, TActions>) => void;
+  consequence: (args: ConsequenceArgs<TTarget, TState, TActions>) => void;
 };
 
 type StoreActions<TStoreName extends StoreKeys> =
