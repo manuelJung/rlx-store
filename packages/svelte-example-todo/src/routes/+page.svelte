@@ -5,8 +5,6 @@
   const todos = createTodoStore()
   const state = todos.useState()
 
-  $: console.log($state)
-
   let newTodo = ""
 </script>
 
@@ -20,7 +18,7 @@
 
 <hr/>
 
-<!-- {#each $state as todo}
+{#each $state.data as todo}
   <div>
     <input
       type="checkbox"
@@ -34,4 +32,4 @@
     <em>Completed</em>
   {/if}
   
-{/each} -->
+{/each}

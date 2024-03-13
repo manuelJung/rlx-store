@@ -1,5 +1,4 @@
 import createStore from '@rlx/svelte'
-import {produce} from 'immer'
 
 type Todo = {
   id: number
@@ -27,8 +26,39 @@ export default function createTodoStore () {
       remove: (id: number) => state => ({
         data: state.data.filter(todo => todo.id !== id)
       }),
+      toggle: (id: number) => state => ({
+        data: state.data.map(todo => {
+          if (todo.id === id) {
+            return {
+              ...todo,
+              completed: !todo.completed
+            }
+          }
+          return todo
+        })
+      })
     }
   })
 
+  store.addRule({
+    // @ts-expect-error
+    id: 'log-add',
+    target: '/add',
+    consequence: ({action}) => console.log(action)
+  })
+
+  store.addRule({
+    // @ts-expect-error
+    id: 'log-remove',
+    target: '/remove',
+    consequence: ({action}) => console.log(action)
+  })
+
   return store
+}
+
+declare global {
+  interface RlxStores {
+    todos: ReturnType<typeof createTodoStore>
+  }
 }
