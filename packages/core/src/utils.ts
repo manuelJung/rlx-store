@@ -82,6 +82,7 @@ export const createAction = (key:string, config:{
    * so the action can be canceled by consequence
    */
   return function (...args:any[]) {
+    // @ts-expect-error
     const actions = this as Store['actions']
     let promise:Promise<boolean>|null = null
     /** consequence can attach action execution */
