@@ -1,11 +1,17 @@
 <script lang="ts">
+  import createCounterStore from "../stores/counter";
   import createTodoStore from "../stores/todos";
 
   const todoStore = createTodoStore()
   const todos = todoStore.useState(state => state.data)
 
+  const counterStore = createCounterStore()
+  const count = counterStore.useState(state => state.count)
+
   let newTodo = ""
 </script>
+
+<button on:click={counterStore.actions.increment}>Counter: {$count}</button>
 
 
 <h2>Add Todo</h2>

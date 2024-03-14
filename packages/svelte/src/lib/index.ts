@@ -4,7 +4,7 @@ import type { Writable } from "svelte/store";
 import createStoreFactory from "@rlx/core";
 import type { Store, StoreConfig, ActionsType } from "@rlx/types";
 
-export default createStoreFactory({
+const createStore = createStoreFactory({
   injectFramework: (store:any) => ({
     ...store,
     useState: (selector:Function=(n:any)=>n, equalityFn?:Function) => {
@@ -43,6 +43,8 @@ export default createStoreFactory({
     equalityFn?: (state:State) => any[],
   ) => Writable<SState>
 };
+
+export default createStore;
 
 function shallowEqual(a:any, b:any) {
   if(a === b) return true
