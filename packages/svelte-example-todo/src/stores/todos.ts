@@ -9,6 +9,7 @@ type Todo = {
 export default function createTodoStore () {
   const store = createStore({
     name: 'todos',
+    persist: true,
     state: {
       data: [] as Todo[]
     },
@@ -43,14 +44,14 @@ export default function createTodoStore () {
   store.addRule({
     // @ts-expect-error
     id: 'log-add',
-    target: '/add',
+    target: 'todos/add',
     consequence: ({action}) => console.log(action)
   })
 
   store.addRule({
     // @ts-expect-error
     id: 'log-remove',
-    target: '/remove',
+    target: 'todos/remove',
     consequence: ({action}) => console.log(action)
   })
 

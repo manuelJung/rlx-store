@@ -50,7 +50,6 @@ type Rule<
   TState,
   TActions extends Record<string, unknown>
 > = {
-  id: string;
   target:
     | TTarget
     | keyof {
