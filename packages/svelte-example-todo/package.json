@@ -22,6 +22,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"immer": "^10.0.4"
+		"immer": "^10.0.4",
+		"validate": "^5.2.0"
 	}
 }
