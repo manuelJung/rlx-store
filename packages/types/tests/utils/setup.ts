@@ -5,6 +5,7 @@ declare global {
   interface RlxStores {
     simpleStore: typeof simpleStore;
     compositeStore: typeof compositeStore;
+    asyncStore: typeof asyncStore;
   }
 }
 
@@ -64,6 +65,7 @@ const createCompositeStore = <
   });
 
   store.addRule({
+    id: "",
     target: "/compositeObject",
     consequence: (args) => args.action,
   });
@@ -79,5 +81,20 @@ export const compositeStore = createCompositeStore({
   },
   state: {
     extendedCompositeState: null,
+  },
+});
+
+export const asyncStore = createStore({
+  name: "asyncStore",
+  actions: {
+    nonAsyncAction: (s: string) => (state) => ({
+      data: (state.data = s),
+    }),
+    asyncAction: (s: string) => ({
+      fetcher: async (state) => ({}),
+    }),
+  },
+  state: {
+    data: "",
   },
 });

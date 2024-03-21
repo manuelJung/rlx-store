@@ -21,9 +21,11 @@ export type StringMeta = [s: string];
 export type NumberMeta = [n: number];
 export function notAny<T>(n: NotAny<T>) {}
 export function expectNever(n: never) {}
-export type KeysMatch<T1, T2> = {
-  [K in keyof T1]: K extends keyof T2 ? true : never;
-}[keyof T1];
+export type KeysAreEqual<A, B> = [keyof A] extends [keyof B]
+  ? [keyof B] extends [keyof A]
+    ? true
+    : false
+  : false;
 export type IsTrue<T> = T extends true ? true : false;
 
 type NotAny<T> = T extends IsAny<T> ? never : T;
