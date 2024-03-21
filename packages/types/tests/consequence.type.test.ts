@@ -3,6 +3,7 @@ import { expectNever, notAny } from "./utils/utils";
 
 // SIMPLESTORE: single simpleStore-target
 simpleStore.addRule({
+  id: "",
   target: "simpleStore/simpleString",
   consequence: (args) => {
     // ts-expects-no-error: as type is correctly inferred
@@ -21,6 +22,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: single compositeStore-target
 compositeStore.addRule({
+  id: "",
   target: "compositeStore/compositeString",
   consequence: (args) => {
     // ts-expects-no-error: as type is correctly inferred
@@ -40,6 +42,7 @@ compositeStore.addRule({
 
 // SIMPLESTORE: single compositeStore-target
 simpleStore.addRule({
+  id: "",
   target: "compositeStore/compositeString",
   consequence: (args) => {
     // ts-expects-no-error: as type is correctly inferred
@@ -58,6 +61,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: single simpleStore-target
 compositeStore.addRule({
+  id: "",
   target: "simpleStore/simpleString",
   consequence: (args) => {
     // ts-expects-no-error: as type is correctly inferred
@@ -77,6 +81,7 @@ compositeStore.addRule({
 
 // SIMPLESTORE: multiple simpleStore-targets
 simpleStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "simpleStore/simpleNumber"],
   consequence: (args) => {
     // ts-expects-no-error: as type for multiple targets is correctly inferred
@@ -96,6 +101,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: multiple compositeStore-targets
 compositeStore.addRule({
+  id: "",
   target: ["compositeStore/compositeString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     // ts-expects-no-error: as type for multiple targets is correctly inferred
@@ -116,6 +122,7 @@ compositeStore.addRule({
 
 // SIMPLESTORE: multiple mixed-targets
 simpleStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     // ts-expects-no-error: as type for multiple targets is correctly inferred
@@ -135,6 +142,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: multiple mixed-targets
 compositeStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     // ts-expects-no-error: as type for multiple targets is correctly inferred
@@ -155,6 +163,7 @@ compositeStore.addRule({
 
 // SIMPLESTORE: multiple compositeStore-targets
 simpleStore.addRule({
+  id: "",
   target: ["compositeStore/compositeString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     // ts-expects-no-error: as type for multiple targets is correctly inferred
@@ -174,6 +183,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: multiple simpleStore-targets
 compositeStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "simpleStore/simpleNumber"],
   consequence: (args) => {
     // ts-expects-no-error: as type for multiple targets is correctly inferred
@@ -191,6 +201,5 @@ compositeStore.addRule({
     expectNever(args.action.type);
   },
 });
-
 
 // @TODO should not allow empty array for target

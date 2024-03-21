@@ -3,6 +3,7 @@ import { StringMeta, NumberMeta, notAny, expectNever } from "./utils/utils";
 
 // SIMPLESTORE: multiple simpleStore-targets
 simpleStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "simpleStore/simpleNumber"],
   consequence: (args) => {
     if (args.action.type === "simpleStore/simpleString") {
@@ -41,6 +42,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: multiple compositeStore-targets
 compositeStore.addRule({
+  id: "",
   target: ["compositeStore/compositeString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     if (args.action.type === "compositeStore/compositeString") {
@@ -80,6 +82,7 @@ compositeStore.addRule({
 
 // SIMPLESTORE: multiple mixed-targets
 simpleStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     if (args.action.type === "simpleStore/simpleString") {
@@ -118,6 +121,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: multiple mixed-targets
 compositeStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     if (args.action.type === "simpleStore/simpleString") {
@@ -157,6 +161,7 @@ compositeStore.addRule({
 
 // SIMPLESTORE: multiple compositeStore-targets
 simpleStore.addRule({
+  id: "",
   target: ["compositeStore/compositeString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     if (args.action.type === "compositeStore/compositeString") {
@@ -195,6 +200,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: multiple simpleStore-targets
 compositeStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "simpleStore/simpleNumber"],
   consequence: (args) => {
     if (args.action.type === "simpleStore/simpleString") {

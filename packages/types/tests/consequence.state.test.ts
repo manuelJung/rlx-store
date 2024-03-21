@@ -8,6 +8,7 @@ import {
 
 // SIMPLESTORE: single simpleStore-target
 simpleStore.addRule({
+  id: "",
   target: "simpleStore/simpleString",
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
@@ -20,6 +21,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: single compositeStore-target
 compositeStore.addRule({
+  id: "",
   target: "compositeStore/compositeString",
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
@@ -33,6 +35,7 @@ compositeStore.addRule({
 
 // SIMPLESTORE: single compositeStore-target
 simpleStore.addRule({
+  id: "",
   target: "compositeStore/compositeString",
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
@@ -45,6 +48,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: single simpleStore-target
 compositeStore.addRule({
+  id: "",
   target: "simpleStore/simpleString",
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
@@ -58,6 +62,7 @@ compositeStore.addRule({
 
 // SIMPLESTORE: multiple simpleStore-targets
 simpleStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "simpleStore/simpleNumber"],
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
@@ -70,6 +75,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: multiple compositeStore-targets
 compositeStore.addRule({
+  id: "",
   target: ["compositeStore/compositeString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
@@ -83,6 +89,7 @@ compositeStore.addRule({
 
 // SIMPLESTORE: multiple mixed-targets
 simpleStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
@@ -95,6 +102,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: multiple mixed-targets
 compositeStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
@@ -108,6 +116,7 @@ compositeStore.addRule({
 
 // SIMPLESTORE: multiple compositeStore-targets
 simpleStore.addRule({
+  id: "",
   target: ["compositeStore/compositeString", "compositeStore/compositeNumber"],
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
@@ -120,6 +129,7 @@ simpleStore.addRule({
 });
 // COMPOSITESTORE: multiple simpleStore-targets
 compositeStore.addRule({
+  id: "",
   target: ["simpleStore/simpleString", "simpleStore/simpleNumber"],
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
