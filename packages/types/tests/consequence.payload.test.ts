@@ -213,3 +213,66 @@ compositeStore.addRule({
     expectNever(args.action.payload);
   },
 });
+
+/* 
+  OWN TARGET
+*/
+// SIMPLESTORE: single simpleStore-target
+simpleStore.addRule({
+  id: "",
+  target: "/simpleString",
+  consequence: (args) => {
+    // ts-expects-no-error: as payload is correctly inferred
+    const payload: string = args.action.payload;
+    // @ts-expect-error: as payload is not correctly inferred
+    const error: number = args.action.payload;
+    // ts-expects-no-error: as payload should not be of type any
+    notAny(args.action.payload);
+    // @ts-expect-error: as payload should not be of type never
+    expectNever(args.action.payload);
+  },
+});
+simpleStore.addRule({
+  id: "",
+  target: "/simpleNumber",
+  consequence: (args) => {
+    // ts-expects-no-error: as payload is correctly inferred
+    const payload: number = args.action.payload;
+    // @ts-expect-error: as payload is not correctly inferred
+    const error: string = args.action.payload;
+    // ts-expects-no-error: as payload should not be of type any
+    notAny(args.action.payload);
+    // @ts-expect-error: as payload should not be of type never
+    expectNever(args.action.payload);
+  },
+});
+
+// COMPOSITESTORE: single compositeStore-target
+compositeStore.addRule({
+  id: "",
+  target: "/compositeString",
+  consequence: (args) => {
+    // ts-expects-no-error: as payload is correctly inferred
+    const payload: string = args.action.payload;
+    // @ts-expect-error: as payload is not correctly inferred
+    const error: number = args.action.payload;
+    // ts-expects-no-error: as payload should not be of type any
+    notAny(args.action.payload);
+    // @ts-expect-error: as payload should not be of type never
+    expectNever(args.action.payload);
+  },
+});
+compositeStore.addRule({
+  id: "",
+  target: "/compositeNumber",
+  consequence: (args) => {
+    // ts-expects-no-error: as payload is correctly inferred
+    const payload: number = args.action.payload;
+    // @ts-expect-error: as payload is not correctly inferred
+    const error: string = args.action.payload;
+    // ts-expects-no-error: as payload should not be of type any
+    notAny(args.action.payload);
+    // @ts-expect-error: as payload should not be of type never
+    expectNever(args.action.payload);
+  },
+});

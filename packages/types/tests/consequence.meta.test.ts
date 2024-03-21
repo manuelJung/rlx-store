@@ -187,3 +187,42 @@ compositeStore.addRule({
     expectNever(args.action.meta);
   },
 });
+
+/* 
+  OWN TARGET
+ */
+
+// SIMPLESTORE: single simpleStore-target
+simpleStore.addRule({
+  id: "",
+  target: "/simpleString",
+  consequence: (args) => {
+    // ts-expects-no-error: as meta is correctly inferred
+    const meta: StringMeta = args.action.meta;
+    // ts-expects-no-error: as meta is an array & push only exists on arrays
+    args.action.meta.push;
+    // @ts-expect-error: if meta has more than one argument
+    args.action.meta[1];
+    // ts-expects-no-error: as meta should not be of type any
+    notAny(args.action.meta);
+    // @ts-expect-error: as meta should not be of type never
+    expectNever(args.action.meta);
+  },
+});
+// COMPOSITESTORE: single compositeStore-target
+compositeStore.addRule({
+  id: "",
+  target: "/compositeString",
+  consequence: (args) => {
+    // ts-expects-no-error: as meta is correctly inferred
+    const meta: StringMeta = args.action.meta;
+    // ts-expects-no-error: as meta is an array & push only exists on arrays
+    args.action.meta.push;
+    // @ts-expect-error: if meta has more than one argument
+    args.action.meta[1];
+    // ts-expects-no-error: as meta should not be of type any
+    notAny(args.action.meta);
+    // @ts-expect-error: as meta should not be of type never
+    expectNever(args.action.meta);
+  },
+});

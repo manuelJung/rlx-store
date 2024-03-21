@@ -86,3 +86,22 @@ compositeStore.addRule({ id: "" });
 simpleStore.addRule({ target: "simpleStore/simpleEmpty" });
 //@ts-expect-error: for no id propperty for a compositeStore
 compositeStore.addRule({ target: "compositeStore/compositeEmpty" });
+
+/* 
+  OWN TARGET
+*/
+// ts-expects-no-error: for a valid simpleStore-target for a simpleStore
+simpleStore.addRule({ id: "", target: "/simpleString" });
+// ts-expects-no-error: for a valid compositeStore-target for a compositeStore
+compositeStore.addRule({ id: "", target: "/compositeString" });
+
+simpleStore.addRule({
+  id: "",
+  //@ts-expect-error: for multiple targets with a own target
+  target: ["/simpleString", "simpleStore/simpleEmpty"],
+});
+compositeStore.addRule({
+  id: "",
+  //@ts-expect-error: for multiple targets with a own target
+  target: ["/compositeString", "compositeStore/compositeEmpty"],
+});
