@@ -42,14 +42,15 @@ export type AsyncActionConfig<TState> = {
 };
 
 export type Store<TState, TActions extends Record<string, unknown>> = {
+  name: string;
+  key?: string;
   getState: () => TState;
-  actions: TActions;
+  subscribe: (cb: (state: TState) => void) => () => void;
   addRule: <TTarget extends RuleTarget | RuleTarget[] | StoreTarget<TActions>>(
     rule: Rule<TTarget, TState, TActions>
   ) => void;
-  key?: string;
-  subscribe: (cb: (state: TState) => void) => () => void;
   dispatchWrapper?: ((fn: any) => void) | undefined;
+  actions: TActions;
 };
 
 type RuleTarget = {
@@ -84,13 +85,24 @@ type ActionKeys<TStore> = TStore extends { actions: infer TActions }
     : never
   : never;
 
-type Rule<
+export type Rule<
   TTarget extends RuleTarget | RuleTarget[] | StoreTarget<TActions>,
   TState,
   TActions extends Record<string, unknown>
 > = {
+  id: string;
   target: TTarget;
   consequence?: (args: ConsequenceArgs<TTarget, TState, TActions>) => void;
+  condition?: (args: any) => Boolean;
+  weight?: number;
+  position?: "BEFORE" | "INSTEAD" | "AFTER";
+  output?: string | string[];
+  concurrency?: "DEFAULT" | "FIRST" | "LAST" | "ONCE" | "SWITCH";
+  concurrencyFilter?: (action: TActions) => string;
+  onExecute?: "REMOVE_RULE" | "RECREATE_RULE";
+  throttle?: number;
+  debounce?: number;
+  delay?: number;
 };
 
 type RemoveAsyncPostfix<T extends string> = T extends
@@ -186,7 +198,8 @@ type StoreTargetArgs<
   };
 };
 
-type CommonRuleArgs<TState, TActions extends Record<string, unknown>> = {
+export type CommonRuleArgs<TState, TActions extends Record<string, unknown>> = {
+  action: TActions;
   store: Store<TState, TActions>;
   wasCanceled: () => boolean;
   effect: (fn: (...args: any[]) => void) => void;
