@@ -93,7 +93,7 @@ export type Rule<
   id: string;
   target: TTarget;
   consequence?: (args: ConsequenceArgs<TTarget, TState, TActions>) => void;
-  condition?: (args: any) => Boolean;
+  condition?: (args: ConditionArgs<TState, TActions>) => Boolean;
   weight?: number;
   position?: "BEFORE" | "INSTEAD" | "AFTER";
   output?: string | string[];
@@ -103,6 +103,13 @@ export type Rule<
   throttle?: number;
   debounce?: number;
   delay?: number;
+};
+
+export type ConditionArgs<TState, TActions extends Record<string, unknown>> = {
+  action: TActions;
+  store: Store<TState, TActions>;
+  getStore: (name: string, key?: string) => Store<TState, TActions> | null;
+  getStores: () => RlxStores;
 };
 
 type RemoveAsyncPostfix<T extends string> = T extends

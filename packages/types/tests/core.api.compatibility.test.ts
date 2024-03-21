@@ -5,6 +5,7 @@ import {
   StoreConfig as TypesStoreConfig,
   Rule as TypesRule,
   AsyncActionConfig as TypesAsyncActionConfig,
+  ConditionArgs as TypesConditionArgs,
 } from "../src/types";
 import {
   Store as CoreStore,
@@ -12,6 +13,7 @@ import {
   StoreConfig as CoreStoreConfig,
   Rule as CoreRule,
   AsyncActionConfig as CoreAsyncActionConfig,
+  ConditionArgs as CoreConditionArgs,
 } from "../../core/src/types";
 
 type StoreMatches = KeysAreEqual<TypesStore<any, any>, CoreStore>;
@@ -40,6 +42,12 @@ type AsyncActionConfigMatches = KeysAreEqual<
   TypesAsyncActionConfig<any>,
   CoreAsyncActionConfig
 >;
-
 // ts-expects-no-error: as both types have the same keys
-const asyncActionConfigMatches: RuleMatches = true;
+const asyncActionConfigMatches: AsyncActionConfigMatches = true;
+
+type ConditionArgsMatches = KeysAreEqual<
+  TypesConditionArgs<any, any>,
+  CoreConditionArgs
+>;
+// ts-expects-no-error: as both types have the same keys
+const conditionArgsMatches: ConditionArgsMatches = true;
