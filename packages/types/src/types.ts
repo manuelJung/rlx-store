@@ -9,11 +9,19 @@ export type StoreConfig<
   TActions extends ActionsType<TState>
 > = {
   name: TName;
-  state: TState;
+  state: HasAsyncAction<TActions> extends true
+    ? TState & { data: any }
+    : TState;
   actions: TActions;
   key?: string;
   persist?: boolean;
 };
+
+type HasAsyncAction<TActions> = {
+  [K in keyof TActions]: TActions[K] extends AsyncAction<any> ? true : never;
+}[keyof TActions] extends never
+  ? false
+  : true;
 
 type SyncAction<TState> = (
   ...payload: any
