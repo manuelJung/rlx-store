@@ -22,18 +22,19 @@ createStore({
   name: "asyncStore",
   actions: {
     asyncAction: (s: string) => ({
-      fetcher: async (state) => null,
+      // jetzt müsste die rückgabe von fetcher null sein
+      // wenn mappings.data nicht vorhanden wäre, dann 0
+      fetcher: async (state) => 0,
       mappings: {
         data: "someKey",
       },
     }),
   },
   state: {
-    data: null,
+    data: 0,
     someKey: null,
   },
 });
-
 
 createStore({
   name: "asyncStore",
@@ -59,7 +60,7 @@ createStore({
     asyncAction: (s: string) => ({
       fetcher: async (state) => null,
       mappings: {
-        data: 'random key',
+        data: "random key",
       },
     }),
   },
@@ -76,7 +77,7 @@ createStore({
     asyncAction: (s: string) => ({
       fetcher: async (state) => null,
       mappings: {
-        isFetching: 'random key'
+        isFetching: "random key",
       },
     }),
   },
@@ -93,7 +94,7 @@ createStore({
     asyncAction: (s: string) => ({
       fetcher: async (state) => null,
       mappings: {
-        fetchError: 'random key'
+        fetchError: "random key",
       },
     }),
   },

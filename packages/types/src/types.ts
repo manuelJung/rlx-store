@@ -36,22 +36,33 @@ export type ActionsType<TState> = Record<
 type DataKeyType<TState> = 'data' extends keyof TState ? TState['data'] : void;
 
 export type AsyncActionConfig<TState> = {
-  /* 
-  wenn mappings.data vorhanden ist, dann muss der returntype von fetcher, 
-  dem entsprechen, von dem key, aus dem state
+   /* 
+  Ich muss den ReturnType von fetcher anpassen
+  Aktuelle, wenn der State einen Key von Data hat, ist der Rückgabetype von diesem Data field
+  siehe DatKeyType. Das soll auch so bleiben, mit noch einer Weiteren Condition.
+  Wenn mappings.data vorhanden ist, dann soll der Returntype von fetcher dem entsprechen, 
+  von dem key aus dem state der in mappings.data gesetzt ist
 
-  beispiel: 
-  state: {
-    data: null
-    anotherKey: "i am a string"
-  }
+  Beispiel: 
 
-  mappings: {
-    data: 'anotherKey'
-  }
-
-  wenn mappings data also vorhanden ist, sollte der returntype von fetcher string sein
-  wenn mappaings data nicht vorhanden ist, sollte das verhalten wie bisher sein
+  createStore({
+      name: "asyncStore",
+      actions: {
+        asyncAction: (s: string) => ({
+          // jetzt müsste die rückgabe von fetcher null sein
+          // wenn mappings.data nicht vorhanden wäre, dann 0
+          fetcher: async (state) => 0,
+          test: (args) => args,
+          mappings: {
+            data: "someKey",
+          },
+        }),
+      },
+      state: {
+        data: 0,
+        someKey: null,
+      },
+  });
   */
   mappings?: {
     data?: keyof TState;
