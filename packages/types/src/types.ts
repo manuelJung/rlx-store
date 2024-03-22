@@ -10,7 +10,7 @@ export type StoreConfig<
 > = {
   name: TName;
   state: HasAsyncAction<TActions> extends true
-    ? TState & { data: any }
+    ? TState & { data?: any; isFetching?: any; fetchError?: any }
     : TState;
   actions: TActions;
   key?: string;
@@ -33,19 +33,40 @@ export type ActionsType<TState> = Record<
   SyncAction<TState> | AsyncAction<TState>
 >;
 
+type DataKeyType<TState> = 'data' extends keyof TState ? TState['data'] : void;
+
 export type AsyncActionConfig<TState> = {
+  /* 
+  wenn mappings.data vorhanden ist, dann muss der returntype von fetcher, 
+  dem entsprechen, von dem key, aus dem state
+
+  beispiel: 
+  state: {
+    data: null
+    anotherKey: "i am a string"
+  }
+
+  mappings: {
+    data: 'anotherKey'
+  }
+
+  wenn mappings data also vorhanden ist, sollte der returntype von fetcher string sein
+  wenn mappaings data nicht vorhanden ist, sollte das verhalten wie bisher sein
+  */
   mappings?: {
-    data?: string;
-    isFetching?: string;
-    fetchError?: string;
+    data?: keyof TState;
+    isFetching?: keyof TState;
+    fetchError?: keyof TState;
   };
-  fetcher: (state: TState) => Promise<any>;
+  fetcher: (state: TState) => Promise<DataKeyType<TState>>;
   concurrency?: "DEFAULT" | "FIRST" | "LAST" | "SWITCH";
   throttle?: number;
   debounce?: number;
-  mapResponse?: (response: any, state: TState) => any;
-  optimisticData?: (state: TState) => any;
-  lense?: string;
+  // mapResponse passt den Rückgabetyp an den von fetcher an, aber nicht als Promise
+  mapResponse?: (response: DataKeyType<TState>, state: TState) => Partial<TState>;
+  // optimisticData gibt den gleichen Typ zurück wie fetcher, jedoch nicht als Promise
+  optimisticData?: (state: TState) => DataKeyType<TState>;
+  // lense?: string;
   triggerOnMount?: boolean;
 };
 

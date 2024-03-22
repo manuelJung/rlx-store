@@ -7,7 +7,7 @@ import {
   notAny,
 } from "./utils/utils";
 
-export const simpleStore = createStore({
+createStore({
   name: "simpleStore",
   actions: {
     testAction: (s: string) => (state) => {
