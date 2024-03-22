@@ -32,7 +32,7 @@ export type AsyncActionConfig = {
   debounce?: number
   mapResponse?: (response:any, state:any) => any
   optimisticData?: (state:any) => any
-  lense?: string // TODO
+  // lense?: string // TODO
   triggerOnMount?: boolean
 }
 
