@@ -276,3 +276,34 @@ compositeStore.addRule({
     expectNever(args.action.payload);
   },
 });
+
+// SIMPLESTORE: multiple simpleStore-targets
+simpleStore.addRule({
+  id: "",
+  target: ["/simpleString", "/simpleNumber"],
+  consequence: (args) => {
+    // ts-expects-no-error: as payload is correctly inferred
+    const payload: string | number = args.action.payload;
+    // @ts-expect-error: as payload is not correctly inferred because its an union
+    const error: number = args.action.payload;
+    // ts-expects-no-error: as payload should not be of type any
+    notAny(args.action.payload);
+    // @ts-expect-error: as payload should not be of type never
+    expectNever(args.action.payload);
+  },
+});
+// COMPOSITESTORE: multiple compositeStore-targets
+compositeStore.addRule({
+  id: "",
+  target: ["/compositeString", "/compositeNumber"],
+  consequence: (args) => {
+    // ts-expects-no-error: as payload is correctly inferred
+    const payload: string | number = args.action.payload;
+    // @ts-expect-error: as payload is not correctly inferred because its an union
+    const error: number = args.action.payload;
+    // ts-expects-no-error: as payload should not be of type any
+    notAny(args.action.payload);
+    // @ts-expect-error: as payload should not be of type never
+    expectNever(args.action.payload);
+  },
+});

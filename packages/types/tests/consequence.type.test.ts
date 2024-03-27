@@ -244,4 +244,45 @@ compositeStore.addRule({
   },
 });
 
+// SIMPLESTORE: multiple simpleStore-targets
+simpleStore.addRule({
+  id: "",
+  target: ["/simpleString", "/simpleNumber"],
+  consequence: (args) => {
+    // ts-expects-no-error: as type for multiple targets is correctly inferred
+    args.action.type === "/simpleString";
+    args.action.type === "/simpleNumber";
+    // @ts-expect-error: as type should not be of type of a rule, which is not part of target
+    args.action.type === "/simpleObject";
+    // @ts-expect-error: as type should not be empty
+    args.action.type === "";
+    // @ts-expect-error: as type should not be invalid
+    args.action.type === "invalid";
+    // ts-expects-no-error: as type should not be of type any
+    notAny(args.action.type);
+    // @ts-expect-error: as type should not be of type never
+    expectNever(args.action.type);
+  },
+});
+// COMPOSITESTORE: multiple compositeStore-targets
+compositeStore.addRule({
+  id: "",
+  target: ["/compositeString", "/compositeNumber"],
+  consequence: (args) => {
+    // ts-expects-no-error: as type for multiple targets is correctly inferred
+    args.action.type === "/compositeString";
+    args.action.type === "/compositeNumber";
+    // @ts-expect-error: as type should not be of type of a rule, which is not part of target
+    args.action.type === "/compositeObject";
+    // @ts-expect-error: as type should not be empty
+    args.action.type === "";
+    // @ts-expect-error: as type should not be invalid
+    args.action.type === "invalid";
+    // ts-expects-no-error: as type should not be of type any
+    notAny(args.action.type);
+    // @ts-expect-error: as type should not be of type never
+    expectNever(args.action.type);
+  },
+});
+
 // @TODO should not allow empty array for target

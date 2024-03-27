@@ -90,18 +90,28 @@ compositeStore.addRule({ target: "compositeStore/compositeEmpty" });
 /* 
   OWN TARGET
 */
+
+// ts-expects-no-error: for multiple own-targets
+simpleStore.addRule({
+  id: "",
+  target: ["/simpleString", "/simpleEmpty"],
+});
 // ts-expects-no-error: for a valid simpleStore-target for a simpleStore
 simpleStore.addRule({ id: "", target: "/simpleString" });
 // ts-expects-no-error: for a valid compositeStore-target for a compositeStore
 compositeStore.addRule({ id: "", target: "/compositeString" });
 
+/* 
+  MIXED TARGETS
+*/
+// ts-expects-no-error: for a combination of a own-target and a ruletarget
 simpleStore.addRule({
   id: "",
-  //@ts-expect-error: for multiple targets with a own target
-  target: ["/simpleString", "simpleStore/simpleEmpty"],
+  target: ["/simpleString", "compositeStore/compositeString"],
 });
-compositeStore.addRule({
+
+simpleStore.addRule({
   id: "",
-  //@ts-expect-error: for multiple targets with a own target
-  target: ["/compositeString", "compositeStore/compositeEmpty"],
+  // @ts-expect-error: for multiple own-actions with targets from different, not own store
+  target: ["/simpleString", "/compositeString"],
 });

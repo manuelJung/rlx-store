@@ -33,37 +33,9 @@ export type ActionsType<TState> = Record<
   SyncAction<TState> | AsyncAction<TState>
 >;
 
-type DataKeyType<TState> = 'data' extends keyof TState ? TState['data'] : void;
+type DataKeyType<TState> = "data" extends keyof TState ? TState["data"] : void;
 
 export type AsyncActionConfig<TState> = {
-   /* 
-  Ich muss den ReturnType von fetcher anpassen
-  Aktuelle, wenn der State einen Key von Data hat, ist der Rückgabetype von diesem Data field
-  siehe DatKeyType. Das soll auch so bleiben, mit noch einer Weiteren Condition.
-  Wenn mappings.data vorhanden ist, dann soll der Returntype von fetcher dem entsprechen, 
-  von dem key aus dem state der in mappings.data gesetzt ist
-
-  Beispiel: 
-
-  createStore({
-      name: "asyncStore",
-      actions: {
-        asyncAction: (s: string) => ({
-          // jetzt müsste die rückgabe von fetcher null sein
-          // wenn mappings.data nicht vorhanden wäre, dann 0
-          fetcher: async (state) => 0,
-          test: (args) => args,
-          mappings: {
-            data: "someKey",
-          },
-        }),
-      },
-      state: {
-        data: 0,
-        someKey: null,
-      },
-  });
-  */
   mappings?: {
     data?: keyof TState;
     isFetching?: keyof TState;
@@ -74,7 +46,10 @@ export type AsyncActionConfig<TState> = {
   throttle?: number;
   debounce?: number;
   // mapResponse passt den Rückgabetyp an den von fetcher an, aber nicht als Promise
-  mapResponse?: (response: DataKeyType<TState>, state: TState) => Partial<TState>;
+  mapResponse?: (
+    response: DataKeyType<TState>,
+    state: TState
+  ) => Partial<TState>;
   // optimisticData gibt den gleichen Typ zurück wie fetcher, jedoch nicht als Promise
   optimisticData?: (state: TState) => DataKeyType<TState>;
   // lense?: string;
@@ -86,7 +61,14 @@ export type Store<TState, TActions extends Record<string, unknown>> = {
   key?: string;
   getState: () => TState;
   subscribe: (cb: (state: TState) => void) => () => void;
-  addRule: <TTarget extends RuleTarget | RuleTarget[] | StoreTarget<TActions>>(
+  addRule: <
+    TTarget extends
+      | RuleTarget
+      | RuleTarget[]
+      | StoreTarget<TActions>
+      | StoreTarget<TActions>[]
+      | (RuleTarget | StoreTarget<TActions>)[]
+  >(
     rule: Rule<TTarget, TState, TActions>
   ) => void;
   dispatchWrapper?: ((fn: any) => void) | undefined;
@@ -126,7 +108,12 @@ type ActionKeys<TStore> = TStore extends { actions: infer TActions }
   : never;
 
 export type Rule<
-  TTarget extends RuleTarget | RuleTarget[] | StoreTarget<TActions>,
+  TTarget extends
+    | RuleTarget
+    | RuleTarget[]
+    | StoreTarget<TActions>
+    | StoreTarget<TActions>[]
+    | (RuleTarget | StoreTarget<TActions>)[],
   TState,
   TActions extends Record<string, unknown>
 > = {
@@ -176,7 +163,12 @@ type ActionFunction<
 > = StoreActions<TStoreName>[TActionname];
 
 export type ConsequenceArgs<
-  TTarget extends RuleTarget | RuleTarget[] | StoreTarget<TActions>,
+  TTarget extends
+    | RuleTarget
+    | RuleTarget[]
+    | StoreTarget<TActions>
+    | StoreTarget<TActions>[]
+    | (RuleTarget | StoreTarget<TActions>)[],
   TState,
   TActions extends Record<string, unknown>
 > = TTarget extends RuleTarget[]
@@ -185,6 +177,10 @@ export type ConsequenceArgs<
   ? SingleRuleTargetArgs<TTarget, TState, TActions>
   : TTarget extends StoreTarget<TActions>
   ? StoreTargetArgs<TTarget, TState, TActions>
+  : TTarget extends StoreTarget<TActions>[]
+  ? StoreTargetArrayArgs<TTarget, TState, TActions>
+  : TTarget extends (RuleTarget | StoreTarget<TActions>)[]
+  ? MixedTargetArrayArgs<TTarget, TState, TActions>
   : never;
 
 type RuleTargetArrayArgs<
@@ -232,8 +228,6 @@ type StoreTargetArgs<
 > = CommonRuleArgs<TState, TActions> & {
   action: {
     type: TTarget;
-    action: TActions;
-    actionName: TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>];
     payload: Parameters<
       //@ts-ignore
       TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
@@ -245,8 +239,62 @@ type StoreTargetArgs<
   };
 };
 
+type StoreTargetArrayArgs<
+  TTargets extends StoreTarget<TActions>[],
+  TState,
+  TActions extends Record<string, unknown>
+> = CommonRuleArgs<TState, TActions> & {
+  action: {
+    [TTarget in TTargets[number]]: {
+      type: TTarget;
+      payload: Parameters<
+        //@ts-ignore
+        TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
+      >[0];
+      meta: ExtractArgumentsType<
+        TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
+      >;
+      skipRule?: string | string[];
+    };
+  }[TTargets[number]];
+};
+
+type MixedTargetArrayArgs<
+  TTargets extends (RuleTarget | StoreTarget<TActions>)[],
+  TState,
+  TActions extends Record<string, unknown>
+> = CommonRuleArgs<TState, TActions> & {
+  action: {
+    [TTarget in TTargets[number]]: {
+      type: TTarget;
+      payload: TTarget extends `/${string}`
+        ? Parameters<
+            //@ts-ignore
+            TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
+          >[0]
+        : ExtractArgumentsType<
+            ActionFunction<
+              ExtractStoreName<RemoveAsyncPostfix<TTarget>>,
+              ExtractActionName<RemoveAsyncPostfix<TTarget>>
+            >
+          >;
+      meta: TTarget extends `/${string}`
+        ? ExtractArgumentsType<
+            TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
+          >
+        : ExtractArgumentsType<
+            ActionFunction<
+              ExtractStoreName<RemoveAsyncPostfix<TTarget>>,
+              ExtractActionName<RemoveAsyncPostfix<TTarget>>
+            >
+          >;
+      skipRule?: string | string[];
+    };
+  }[TTargets[number]];
+};
+
 export type CommonRuleArgs<TState, TActions extends Record<string, unknown>> = {
-  action: TActions;
+  actions: TActions;
   store: Store<TState, TActions>;
   wasCanceled: () => boolean;
   effect: (fn: (...args: any[]) => void) => void;
