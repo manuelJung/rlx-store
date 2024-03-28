@@ -73,3 +73,19 @@ export const compositeStore = createCompositeStore({
     extendedCompositeState: null,
   },
 });
+
+createStore({
+  name: "storeWithNonObjectState",
+  actions: {
+    testAction: (s: string) => (state) => {
+      // ts-expects-no-error: if state is inferred correctly
+      const test: string = state;
+      // ts-expects-no-error: as state should not be of type any
+      notAny(state);
+      // @ts-expect-error: as state should not be of type never
+      expectNever(state);
+      return state;
+    },
+  },
+  state: "someString",
+});

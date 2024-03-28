@@ -5,7 +5,7 @@ type StoreKeys = keyof RlxStores;
 
 export type StoreConfig<
   TName extends String,
-  TState extends Record<string, unknown>,
+  TState extends Record<string, unknown> | any,
   TActions extends ActionsType<TState>
 > = {
   name: TName;
