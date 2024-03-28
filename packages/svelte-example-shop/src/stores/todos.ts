@@ -42,14 +42,12 @@ export default function createTodoStore () {
   })
 
   store.addRule({
-    // @ts-expect-error
     id: 'log-add',
     target: 'todos/add',
     consequence: ({action}) => console.log(action)
   })
 
   store.addRule({
-    // @ts-expect-error
     id: 'log-remove',
     target: 'todos/remove',
     consequence: ({action}) => console.log(action)
