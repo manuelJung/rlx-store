@@ -61,9 +61,7 @@ export type Store<TState, TActions extends Record<string, unknown>> = {
   addRule: <
     TTarget extends
       | RuleTarget
-      | RuleTarget[]
       | SlashRuleTarget<TActions>
-      | SlashRuleTarget<TActions>[]
       | (RuleTarget | SlashRuleTarget<TActions>)[]
   >(
     rule: Rule<TTarget, TState, TActions>
@@ -107,9 +105,7 @@ type ActionKeys<TStore> = TStore extends { actions: infer TActions }
 export type Rule<
   TTarget extends
     | RuleTarget
-    | RuleTarget[]
     | SlashRuleTarget<TActions>
-    | SlashRuleTarget<TActions>[]
     | (RuleTarget | SlashRuleTarget<TActions>)[],
   TState,
   TActions extends Record<string, unknown>

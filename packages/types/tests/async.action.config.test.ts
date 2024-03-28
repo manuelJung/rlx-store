@@ -3,34 +3,28 @@ import { createStore } from "./utils/utils";
 createStore({
   name: "asyncStore",
   actions: {
-    another: (s: string) => (state) => ({
-      simpleString: state.simpleString + s,
-    }),
+    // ts-expects-no-error: if returntype of fetcher is void, when state.data does not exist
     asyncAction: (s: string) => ({
-      fetcher: async (state) => state.data,
-      mapResponse: (response, state) => state,
-      mappings: {},
+      fetcher: async (state) => {},
     }),
   },
   state: {
-    data: null,
-    simpleString: "",
+    someKey: 0,
   },
 });
 
 createStore({
   name: "asyncStore",
   actions: {
+    // @ts-expect-error: if returntype of fetcher is not void, when state.data does not exist
     asyncAction: (s: string) => ({
-      fetcher: async (state) => 0,
-      mappings: {
-        data: "someKey",
-      },
+      fetcher: async (state) => ({
+        someKey: 0,
+      }),
     }),
   },
   state: {
-    data: 0,
-    someKey: null,
+    someKey: 0,
   },
 });
 
@@ -40,14 +34,11 @@ createStore({
     // @ts-expect-error: if returntype of fetcher is not same as state[data] (if state.data exists)
     asyncAction: (s: string) => ({
       fetcher: async (state) => "",
-      mappings: {
-        data: "someKey",
-      },
     }),
   },
   state: {
     data: null,
-    someKey: null,
+    someKey: 0,
   },
 });
 
