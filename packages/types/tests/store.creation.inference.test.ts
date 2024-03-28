@@ -7,7 +7,7 @@ import {
   notAny,
 } from "./utils/utils";
 
-export const simpleStore = createStore({
+createStore({
   name: "simpleStore",
   actions: {
     testAction: (s: string) => (state) => {
@@ -72,4 +72,20 @@ export const compositeStore = createCompositeStore({
   state: {
     extendedCompositeState: null,
   },
+});
+
+createStore({
+  name: "storeWithNonObjectState",
+  actions: {
+    testAction: (s: string) => (state) => {
+      // ts-expects-no-error: if state is inferred correctly
+      const test: string = state;
+      // ts-expects-no-error: as state should not be of type any
+      notAny(state);
+      // @ts-expect-error: as state should not be of type never
+      expectNever(state);
+      return state;
+    },
+  },
+  state: "someString",
 });

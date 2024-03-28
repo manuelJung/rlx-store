@@ -91,7 +91,7 @@ export const asyncStore = createStore({
       data: (state.data = s),
     }),
     asyncAction: (s: string) => ({
-      fetcher: async (state) => ({}),
+      fetcher: async (state) => "",
     }),
   },
   state: {

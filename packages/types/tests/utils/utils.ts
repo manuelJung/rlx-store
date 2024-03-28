@@ -34,7 +34,7 @@ type IsAny<T> = unknown extends T ? (T extends {} ? T : never) : never;
 const createStoreFactory = () => {
   function createStore<
     Name extends string,
-    State extends Record<string, unknown>,
+    State extends Record<string, unknown> | any,
     Action extends ActionsType<State>
   >(cfg: StoreConfig<Name, State, Action>) {
     return {} as Store<State, Action>;

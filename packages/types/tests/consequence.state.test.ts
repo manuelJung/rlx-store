@@ -142,7 +142,7 @@ compositeStore.addRule({
 });
 
 /* 
-  OWN TARGET
+  SLASH TARGET
 */
 // SIMPLESTORE: single simpleStore-target
 simpleStore.addRule({
@@ -161,6 +161,64 @@ simpleStore.addRule({
 compositeStore.addRule({
   id: "",
   target: "/compositeString",
+  consequence: (args) => {
+    // ts-expects-no-error: if state is inferred correctly
+    const state: CompositeStoreState = args.store.getState();
+    // ts-expects-no-error: as state should not be of type any
+    notAny(args.store.getState());
+    // @ts-expect-error: as state should not be of type never
+    expectNever(args.store.getState());
+  },
+});
+
+// SIMPLESTORE: multiple simpleStore-targets
+simpleStore.addRule({
+  id: "",
+  target: ["/simpleString", "/simpleNumber"],
+  consequence: (args) => {
+    // ts-expects-no-error: if state is inferred correctly
+    const state: SimpleStoreState = args.store.getState();
+    // ts-expects-no-error: as state should not be of type any
+    notAny(args.store.getState());
+    // @ts-expect-error: as state should not be of type never
+    expectNever(args.store.getState());
+  },
+});
+// COMPOSITESTORE: multiple compositeStore-targets
+compositeStore.addRule({
+  id: "",
+  target: ["/compositeString", "/compositeNumber"],
+  consequence: (args) => {
+    // ts-expects-no-error: if state is inferred correctly
+    const state: CompositeStoreState = args.store.getState();
+    // ts-expects-no-error: as state should not be of type any
+    notAny(args.store.getState());
+    // @ts-expect-error: as state should not be of type never
+    expectNever(args.store.getState());
+  },
+});
+
+/* 
+  MIXED TARGETS
+*/
+
+// SIMPLESTORE: multiple mixed-targets
+simpleStore.addRule({
+  id: "",
+  target: ["/simpleString", "compositeStore/compositeNumber"],
+  consequence: (args) => {
+    // ts-expects-no-error: if state is inferred correctly
+    const state: SimpleStoreState = args.store.getState();
+    // ts-expects-no-error: as state should not be of type any
+    notAny(args.store.getState());
+    // @ts-expect-error: as state should not be of type never
+    expectNever(args.store.getState());
+  },
+});
+// COMPOSITESTORE: multiple mixed-targets
+compositeStore.addRule({
+  id: "",
+  target: ["simpleStore/simpleString", "/compositeNumber"],
   consequence: (args) => {
     // ts-expects-no-error: if state is inferred correctly
     const state: CompositeStoreState = args.store.getState();
