@@ -270,7 +270,7 @@ compositeStore.addRule({
   MIXED TARGETS
 */
 
-// SIMPLESTORE: multiple simpleStore-targets
+// SIMPLESTORE: multiple mixed-targets
 simpleStore.addRule({
   id: "",
   target: ["/simpleString", "compositeStore/compositeNumber"],
@@ -293,7 +293,7 @@ simpleStore.addRule({
     expectNever(args.action.meta);
   },
 });
-// COMPOSITESTORE: multiple compositeStore-targets
+// COMPOSITESTORE: multiple mixed-targets
 compositeStore.addRule({
   id: "",
   target: ["/compositeString", "/compositeNumber"],

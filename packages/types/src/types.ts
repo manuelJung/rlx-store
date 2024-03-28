@@ -45,14 +45,11 @@ export type AsyncActionConfig<TState> = {
   concurrency?: "DEFAULT" | "FIRST" | "LAST" | "SWITCH";
   throttle?: number;
   debounce?: number;
-  // mapResponse passt den Rückgabetyp an den von fetcher an, aber nicht als Promise
   mapResponse?: (
     response: DataKeyType<TState>,
     state: TState
   ) => Partial<TState>;
-  // optimisticData gibt den gleichen Typ zurück wie fetcher, jedoch nicht als Promise
   optimisticData?: (state: TState) => DataKeyType<TState>;
-  // lense?: string;
   triggerOnMount?: boolean;
 };
 
@@ -272,12 +269,7 @@ type MixedTargetArrayArgs<
             //@ts-ignore
             TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
           >[0]
-        : ExtractArgumentsType<
-            ActionFunction<
-              ExtractStoreName<RemoveAsyncPostfix<TTarget>>,
-              ExtractActionName<RemoveAsyncPostfix<TTarget>>
-            >
-          >;
+        : ExtractFirstArgumentType<RemoveAsyncPostfix<TTarget>>;
       meta: TTarget extends `/${string}`
         ? ExtractArgumentsType<
             TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
@@ -294,7 +286,7 @@ type MixedTargetArrayArgs<
 };
 
 export type CommonRuleArgs<TState, TActions extends Record<string, unknown>> = {
-  actions: TActions;
+  action: TActions;
   store: Store<TState, TActions>;
   wasCanceled: () => boolean;
   effect: (fn: (...args: any[]) => void) => void;

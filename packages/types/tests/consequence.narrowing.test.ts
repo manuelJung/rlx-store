@@ -328,9 +328,9 @@ compositeStore.addRule({
 // SIMPLESTORE: multiple mixed-targets
 simpleStore.addRule({
   id: "",
-  target: ["simpleStore/simpleString", "compositeStore/compositeNumber"],
+  target: ["/simpleString", "compositeStore/compositeNumber"],
   consequence: (args) => {
-    if (args.action.type === "simpleStore/simpleString") {
+    if (args.action.type === "/simpleString") {
       // ts-expects-no-error: as with type-narrowing the type should be inferred
       const string: StringMeta = args.action.meta;
       // ts-expects-no-error: as payload should not be of type any
@@ -338,7 +338,7 @@ simpleStore.addRule({
       // @ts-expect-error: as payload should not be of type never
       expectNever(args.action.payload);
     }
-    if (args.action.type === "simpleStore/simpleString") {
+    if (args.action.type === "/simpleString") {
       // ts-expects-no-error: as with type-narrowing the type should be inferred
       const string: string = args.action.payload;
       // ts-expects-no-error: as payload should not be of type any
@@ -367,7 +367,7 @@ simpleStore.addRule({
 // COMPOSITESTORE: multiple mixed-targets
 compositeStore.addRule({
   id: "",
-  target: ["simpleStore/simpleString", "compositeStore/compositeNumber"],
+  target: ["simpleStore/simpleString", "/compositeNumber"],
   consequence: (args) => {
     if (args.action.type === "simpleStore/simpleString") {
       // ts-expects-no-error: as with type-narrowing the type should be inferred
@@ -385,7 +385,7 @@ compositeStore.addRule({
       // @ts-expect-error: as payload should not be of type never
       expectNever(args.action.payload);
     }
-    if (args.action.type === "compositeStore/compositeNumber") {
+    if (args.action.type === "/compositeNumber") {
       // ts-expects-no-error: as with type-narrowing the type should be inferred
       const number: NumberMeta = args.action.meta;
       // ts-expects-no-error: as payload should not be of type any
@@ -393,7 +393,7 @@ compositeStore.addRule({
       // @ts-expect-error: as payload should not be of type never
       expectNever(args.action.payload);
     }
-    if (args.action.type === "compositeStore/compositeNumber") {
+    if (args.action.type === "/compositeNumber") {
       // ts-expects-no-error: as with type-narrowing the type should be inferred
       const number: number = args.action.payload;
       // ts-expects-no-error: as payload should not be of type any

@@ -22,8 +22,6 @@ createStore({
   name: "asyncStore",
   actions: {
     asyncAction: (s: string) => ({
-      // jetzt müsste die rückgabe von fetcher null sein
-      // wenn mappings.data nicht vorhanden wäre, dann 0
       fetcher: async (state) => 0,
       mappings: {
         data: "someKey",
