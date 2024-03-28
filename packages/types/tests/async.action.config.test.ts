@@ -3,6 +3,42 @@ import { createStore } from "./utils/utils";
 createStore({
   name: "asyncStore",
   actions: {
+    //@ts-expect-error: @TODO this should ideally not throw any error, see info below
+    // when the mappings.data key is set, the returnType of fetcher should be state[mappings.data]
+    // so in this case null should be expected
+    asyncAction: (s: string) => ({
+      fetcher: async (state) => null,
+      mappings: {
+        data: "someKey",
+      },
+    }),
+  },
+  state: {
+    data: 0,
+    someKey: null,
+  },
+});
+
+// workaround for above case
+createStore({
+  name: "asyncStore",
+  actions: {
+    asyncAction: (s: string) => ({
+      fetcher: async (state) => null as any,
+      mappings: {
+        data: "someKey",
+      },
+    }),
+  },
+  state: {
+    data: 0,
+    someKey: null,
+  },
+});
+
+createStore({
+  name: "asyncStore",
+  actions: {
     // ts-expects-no-error: if returntype of fetcher is void, when state.data does not exist
     asyncAction: (s: string) => ({
       fetcher: async (state) => {},
