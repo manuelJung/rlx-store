@@ -62,9 +62,9 @@ export type Store<TState, TActions extends Record<string, unknown>> = {
     TTarget extends
       | RuleTarget
       | RuleTarget[]
-      | StoreTarget<TActions>
-      | StoreTarget<TActions>[]
-      | (RuleTarget | StoreTarget<TActions>)[]
+      | SlashRuleTarget<TActions>
+      | SlashRuleTarget<TActions>[]
+      | (RuleTarget | SlashRuleTarget<TActions>)[]
   >(
     rule: Rule<TTarget, TState, TActions>
   ) => void;
@@ -87,7 +87,7 @@ type RuleTarget = {
   }[ActionKeys<RlxStores[Key]>];
 }[StoreKeys];
 
-type StoreTarget<TActions> = {
+type SlashRuleTarget<TActions> = {
   [K in keyof TActions]: TActions[K] extends SyncAction<any>
     ? `/${Extract<K, string>}`
     : TActions[K] extends AsyncAction<any>
@@ -108,9 +108,9 @@ export type Rule<
   TTarget extends
     | RuleTarget
     | RuleTarget[]
-    | StoreTarget<TActions>
-    | StoreTarget<TActions>[]
-    | (RuleTarget | StoreTarget<TActions>)[],
+    | SlashRuleTarget<TActions>
+    | SlashRuleTarget<TActions>[]
+    | (RuleTarget | SlashRuleTarget<TActions>)[],
   TState,
   TActions extends Record<string, unknown>
 > = {
@@ -162,126 +162,58 @@ type ActionFunction<
 export type ConsequenceArgs<
   TTarget extends
     | RuleTarget
-    | RuleTarget[]
-    | StoreTarget<TActions>
-    | StoreTarget<TActions>[]
-    | (RuleTarget | StoreTarget<TActions>)[],
+    | SlashRuleTarget<TActions>
+    | (RuleTarget | SlashRuleTarget<TActions>)[],
   TState,
   TActions extends Record<string, unknown>
-> = TTarget extends RuleTarget[]
-  ? RuleTargetArrayArgs<TTarget, TState, TActions>
-  : TTarget extends RuleTarget
-  ? SingleRuleTargetArgs<TTarget, TState, TActions>
-  : TTarget extends StoreTarget<TActions>
-  ? StoreTargetArgs<TTarget, TState, TActions>
-  : TTarget extends StoreTarget<TActions>[]
-  ? StoreTargetArrayArgs<TTarget, TState, TActions>
-  : TTarget extends (RuleTarget | StoreTarget<TActions>)[]
-  ? MixedTargetArrayArgs<TTarget, TState, TActions>
+> = TTarget extends RuleTarget
+  ? RuleTargetArgs<TTarget, TState, TActions>
+  : TTarget extends SlashRuleTarget<TActions>
+  ? SlashRuleTargetArgs<TTarget, TState, TActions>
+  : TTarget extends (RuleTarget | SlashRuleTarget<TActions>)[]
+  ? ArrayRuleTargetArgs<TTarget, TState, TActions>
   : never;
 
-type RuleTargetArrayArgs<
-  TTargets extends RuleTarget[],
-  TState,
+type SlashActionArgs<
+  TTarget extends SlashRuleTarget<TActions>,
   TActions extends Record<string, unknown>
-> = CommonRuleArgs<TState, TActions> & {
-  action: {
-    [TTarget in TTargets[number]]: {
-      type: TTarget;
-      payload: ExtractFirstArgumentType<RemoveAsyncPostfix<TTarget>>;
-      meta: ExtractArgumentsType<
-        ActionFunction<
-          ExtractStoreName<RemoveAsyncPostfix<TTarget>>,
-          ExtractActionName<RemoveAsyncPostfix<TTarget>>
-        >
-      >;
-      skipRule?: string | string[];
-    };
-  }[TTargets[number]];
+> = {
+  type: TTarget;
+  payload: Parameters<
+    // @ts-expect-error
+    TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
+  >[0];
+  meta: ExtractArgumentsType<
+    TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
+  >;
+  skipRule?: string | string[];
 };
 
-type SingleRuleTargetArgs<
+type RuleTargetArgs<
   TTarget extends RuleTarget,
   TState,
   TActions extends Record<string, unknown>
 > = CommonRuleArgs<TState, TActions> & {
-  action: {
-    type: TTarget;
-    payload: ExtractFirstArgumentType<RemoveAsyncPostfix<TTarget>>;
-    meta: ExtractArgumentsType<
-      ActionFunction<
-        ExtractStoreName<RemoveAsyncPostfix<TTarget>>,
-        ExtractActionName<RemoveAsyncPostfix<TTarget>>
-      >
-    >;
-    skipRule?: string | string[];
-  };
+  action: ActionArgs<TTarget>;
 };
 
-type StoreTargetArgs<
-  TTarget extends StoreTarget<TActions>,
+type SlashRuleTargetArgs<
+  TTarget extends SlashRuleTarget<TActions>,
+  TState,
+  TActions extends Record<string, unknown>
+> = CommonRuleArgs<TState, TActions> & {
+  action: SlashActionArgs<TTarget, TActions>;
+};
+
+type ArrayRuleTargetArgs<
+  TTargets extends (RuleTarget | SlashRuleTarget<TActions>)[],
   TState,
   TActions extends Record<string, unknown>
 > = CommonRuleArgs<TState, TActions> & {
   action: {
-    type: TTarget;
-    payload: Parameters<
-      //@ts-ignore
-      TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
-    >[0];
-    meta: ExtractArgumentsType<
-      TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
-    >;
-    skipRule?: string | string[];
-  };
-};
-
-type StoreTargetArrayArgs<
-  TTargets extends StoreTarget<TActions>[],
-  TState,
-  TActions extends Record<string, unknown>
-> = CommonRuleArgs<TState, TActions> & {
-  action: {
-    [TTarget in TTargets[number]]: {
-      type: TTarget;
-      payload: Parameters<
-        //@ts-ignore
-        TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
-      >[0];
-      meta: ExtractArgumentsType<
-        TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
-      >;
-      skipRule?: string | string[];
-    };
-  }[TTargets[number]];
-};
-
-type MixedTargetArrayArgs<
-  TTargets extends (RuleTarget | StoreTarget<TActions>)[],
-  TState,
-  TActions extends Record<string, unknown>
-> = CommonRuleArgs<TState, TActions> & {
-  action: {
-    [TTarget in TTargets[number]]: {
-      type: TTarget;
-      payload: TTarget extends `/${string}`
-        ? Parameters<
-            //@ts-ignore
-            TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
-          >[0]
-        : ExtractFirstArgumentType<RemoveAsyncPostfix<TTarget>>;
-      meta: TTarget extends `/${string}`
-        ? ExtractArgumentsType<
-            TActions[ExtractActionName<RemoveAsyncPostfix<TTarget>>]
-          >
-        : ExtractArgumentsType<
-            ActionFunction<
-              ExtractStoreName<RemoveAsyncPostfix<TTarget>>,
-              ExtractActionName<RemoveAsyncPostfix<TTarget>>
-            >
-          >;
-      skipRule?: string | string[];
-    };
+    [TTarget in TTargets[number]]: TTarget extends SlashRuleTarget<TActions>
+      ? SlashActionArgs<TTarget, TActions>
+      : ActionArgs<Extract<TTarget, RuleTarget>>;
   }[TTargets[number]];
 };
 
@@ -292,6 +224,18 @@ export type CommonRuleArgs<TState, TActions extends Record<string, unknown>> = {
   effect: (fn: (...args: any[]) => void) => void;
   getStore: (name: string, key?: string) => Store<TState, TActions> | null;
   getStores: (name: string) => Store<TState, TActions>[];
+};
+
+type ActionArgs<TTarget extends RuleTarget> = {
+  type: TTarget;
+  payload: ExtractFirstArgumentType<RemoveAsyncPostfix<TTarget>>;
+  meta: ExtractArgumentsType<
+    ActionFunction<
+      ExtractStoreName<RemoveAsyncPostfix<TTarget>>,
+      ExtractActionName<RemoveAsyncPostfix<TTarget>>
+    >
+  >;
+  skipRule?: string | string[];
 };
 
 type ExtractFirstArgumentType<TTarget extends string> =
