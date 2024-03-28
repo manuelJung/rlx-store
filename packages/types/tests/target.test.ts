@@ -88,10 +88,10 @@ simpleStore.addRule({ target: "simpleStore/simpleEmpty" });
 compositeStore.addRule({ target: "compositeStore/compositeEmpty" });
 
 /* 
-  OWN TARGET
+  SLASH TARGET
 */
 
-// ts-expects-no-error: for multiple own-targets
+// ts-expects-no-error: for multiple slash-targets
 simpleStore.addRule({
   id: "",
   target: ["/simpleString", "/simpleEmpty"],
@@ -104,7 +104,7 @@ compositeStore.addRule({ id: "", target: "/compositeString" });
 /* 
   MIXED TARGETS
 */
-// ts-expects-no-error: for a combination of a own-target and a ruletarget
+// ts-expects-no-error: for a combination of a slash-target and a ruletarget
 simpleStore.addRule({
   id: "",
   target: ["/simpleString", "compositeStore/compositeString"],
@@ -112,6 +112,6 @@ simpleStore.addRule({
 
 simpleStore.addRule({
   id: "",
-  // @ts-expect-error: for multiple own-actions with targets from different, not own store
+  // @ts-expect-error: for multiple slash-targets not of own store
   target: ["/simpleString", "/compositeString"],
 });

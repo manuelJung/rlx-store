@@ -203,7 +203,7 @@ compositeStore.addRule({
 });
 
 /* 
-  OWN TARGET
+  SLASH TARGET
 */
 // SIMPLESTORE: single simpleStore-target
 simpleStore.addRule({

@@ -37,7 +37,7 @@ asyncStore.addRule({
 });
 
 /* 
-  OWN TARGET RULES 
+  SLASH TARGET RULES 
 */
 // @ts-expect-error for a async target without postfix
 asyncStore.addRule({ id: "", target: "/asyncAction" });
@@ -73,13 +73,13 @@ asyncStore.addRule({
   MIXED TARGETS
 */
 
-// ts-expects-no-error: for a combination of a own-target and a ruletarget
+// ts-expects-no-error: for a combination of a slash-targets and a target
 asyncStore.addRule({
   id: "",
   target: ["/asyncAction/request", "compositeStore/compositeEmpty"],
 });
 asyncStore.addRule({
   id: "",
-  // @ts-expect-error: for multiple async own-actions with targets from different, not own store
+  // @ts-expect-error: for multiple slash-targets not of own store 
   target: ["/asyncAction/request", "/simpleString"],
 });

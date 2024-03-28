@@ -239,7 +239,7 @@ compositeStore.addRule({
 });
 
 /* 
-  OWN TARGET
+  SLASH TARGET
 */
 
 // SIMPLESTORE: multiple simpleStore-targets
