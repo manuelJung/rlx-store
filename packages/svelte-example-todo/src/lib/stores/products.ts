@@ -27,18 +27,17 @@ export default function createProductStore(name:string, filterValues: Partial<Fi
       } satisfies FilterValues as FilterValues
     },
     actions: {
-      fetchRequest: () => state => ({
-        isFetching: true,
-        fetchError: null
+      fetch: () => ({
+        triggerOnMount: true,
+        concurrency: 'SWITCH',
+        fetcher: state => fetchProducts(state.filterValues),
+        mapResponse: (response, state) => ({
+          ...state,
+          data: response.hits,
+          isFetching: false,
+        })
       }),
-      fetchSuccess: (products: Product[]) => state => ({
-        isFetching: false,
-        data: products
-      }),
-      fetchError: (error: string) => state => ({
-        isFetching: false,
-        fetchError: error
-      }),
+      /** my comment */
       setFilterValue: (key: keyof FilterValues, value: string) => state => ({
         filterValues: {
           ...state.filterValues,
@@ -48,26 +47,10 @@ export default function createProductStore(name:string, filterValues: Partial<Fi
     }
   })
 
-  console.log('rendering')
-
-  store.addRule({
-    // @ts-expect-error
-    id: 'fetch',
-    target: '/fetchRequest',
-    consequence: (args) => {
-      const state = args.store.getState()
-      return fetchProducts(state.filterValues).then(
-        result => args.store.actions.fetchSuccess(result.hits),
-        error => args.store.actions.fetchError(error.message)
-      )
-    }
-  })
-
   store.addRule({
     id: 'trigger-fetch',
-    // @ts-expect-error
-    target: ['/@mount', '/setFilterValue'],
-    consequence: (args) => args.store.actions.fetchRequest()
+    target: '/setFilterValue',
+    consequence: (args) => args.store.actions.fetch()
   })
 
   return store
