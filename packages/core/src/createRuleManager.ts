@@ -1,6 +1,6 @@
 import dispatchEvent from './rule/dispatchEvent'
 import { startAddWhenSaga } from './rule/saga'
-import { createRuleContainer, updateRuleTarget } from './rule/utils'
+import { createRuleContainer, destroyRule, updateRuleTarget } from './rule/utils'
 import * as t from './types'
 
 export default function createRuleManager (args:t.FactoryArgs, managers:t.Managers) {
@@ -22,6 +22,10 @@ export default function createRuleManager (args:t.FactoryArgs, managers:t.Manage
       db.set(id, container)
       managers.events.trigger({type:'REGISTER_RULE', container})
       startAddWhenSaga(container)
+      if (storeContainer) {
+        storeContainer.events.once("DESTROY", () => destroyRule(container))
+      }
+      container.events.once("DESTROY", () => db.delete(id))
     },
     dispatch: (args: {
       action:t.Action, 
