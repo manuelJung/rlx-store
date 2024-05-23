@@ -7,6 +7,9 @@ type Config = {
 }
 
 export default function setupTest (config:Config={}) {
+  //@ts-ignore
+  global.window = {};
+
   let mountFnRef = {
     current: () => {}
   }
