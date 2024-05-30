@@ -10,8 +10,8 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=neutral --outdir=dist && tsc src/index.ts --downlevelIteration --declaration --emitDeclarationOnly --outDir dist",
-    "test": "jest --watch",
+    "build": "esbuild src/index.ts --bundle --platform=neutral --outdir=dist && tsc",
+    "test": "jest",
     "type-check": "tsc",
     "size": "size-limit"
   },

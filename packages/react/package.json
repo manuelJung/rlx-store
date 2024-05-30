@@ -7,9 +7,9 @@
   "license": "ISC",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=neutral --outdir=dist --main-fields=main --external:react && tsc src/index.ts --jsx --declaration --emitDeclarationOnly --outDir dist",
+    "build": "esbuild src/index.ts --bundle --platform=neutral --outdir=dist --main-fields=main --external:react && tsc",
     "size": "size-limit",
-    "test": "jest --watch"
+    "test": "jest"
   },
   "size-limit": [
     {
@@ -32,7 +32,8 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@rlx/core": "*"
+    "@rlx/core": "*",
+    "@rlx/types": "*"
   },
   "peerDependencies": {
     "react": "~18.0"

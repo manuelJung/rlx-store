@@ -4,7 +4,7 @@ import createStoreFactory from '@rlx/core'
 const createStore = createStoreFactory({
   injectFramework: store => ({
     ...store,
-    useState: (selector = defaultSelector, equalityFn) => {
+    useState: (selector = defaultSelector, equalityFn: any) => {
       const equalityCache = equalityFn ? equalityFn(store.getState()) : null
       const cacheRef = React.useRef(equalityCache)
       cacheRef.current = equalityCache
