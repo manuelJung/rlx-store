@@ -32,14 +32,10 @@ describe('store -> name', () => {
       name: 'my-name',
       actions: { test: () => () => null }
     })
-    const action = store.test()
-    expect(action?.type).toBe('my-name/test')
-    expect(c.managers.rule.dispatch).toBeCalledWith(
-      {type:'my-name/test', meta: [], payload: undefined}, 
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-    )
+    store.actions.test()
+    expect(c.managers.rule.dispatch).toBeCalledWith(expect.objectContaining({
+      action: {type:'my-name/test', meta: [], payload: undefined},
+    }))
   })
 
   it('created totally new store instance when value changes', () => {

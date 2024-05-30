@@ -12,6 +12,7 @@
   "scripts": {
     "build": "esbuild src/index.ts --bundle --platform=neutral --outdir=dist && tsc src/index.ts --downlevelIteration --declaration --emitDeclarationOnly --outDir dist",
     "test": "jest --watch",
+    "type-check": "tsc",
     "size": "size-limit"
   },
   "size-limit": [

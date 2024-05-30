@@ -14,9 +14,26 @@ export type Managers = {
 
 export type FactoryArgs = {
   injectFramework: (store:Store) => Store
-  getInstanceId: (createId:()=>string) => string
   onMount: (cb:()=>void) => void
   onDestroy: (cb:()=>void) => void
+}
+
+export type FunctionAction = (state:any) => any
+
+export type AsyncActionConfig = {
+  mappings?: {
+    data?: string
+    isFetching?: string
+    fetchError?: string
+  }
+  fetcher: (state:any) => Promise<any>
+  concurrency?: 'DEFAULT' | 'FIRST' | 'LAST' | 'SWITCH'
+  throttle?: number
+  debounce?: number
+  mapResponse?: (response:any, state:any) => any
+  optimisticData?: (state:any) => any
+  // lense?: string // TODO
+  triggerOnMount?: boolean
 }
 
 export type StoreConfig = {
@@ -24,7 +41,7 @@ export type StoreConfig = {
   key?: string
   state: any
   persist?: boolean
-  actions: Record<string, (...args:any[]) => any>
+  actions: Record<string, (...args:any[]) => (FunctionAction|AsyncActionConfig)>
 }
 
 export type Store = {
@@ -34,11 +51,12 @@ export type Store = {
   subscribe: (cb:(state:any)=>void) => () => void
   addRule: (rule:Rule) => void
   dispatchWrapper?: (fn:any) => void
+  actions: Record<string, (...args:any[]) => any>
 }
 
 export type StoreContainer = {
   id: string
-  store: Store & Record<string, any>
+  store: Store
   state: any
   numParents: number
   events: ReturnType<typeof createEventContainer<StoreEvent>>
@@ -55,6 +73,8 @@ export type Action = {
   meta: any[],
   skipRule?: string | string[]
   payload: any
+  _promiseResolve?: (b:boolean) => void
+  _resetData?: any
 }
 
 export type RuleContainer = {
@@ -88,14 +108,14 @@ export type RuleContainer = {
 
 export type ConditionArgs = {
   action: Action
-  store: Store & Record<string, any>
+  store: Store
   getStore: (name:string, key?:string) => Store | null
   getStores: (name:string) => Store[]
 }
 
 export type ConsequenceArgs = {
   action: Action
-  store: Store & Record<string, any>
+  store: Store
   wasCanceled: () => boolean
   effect: (fn:(...args:any[])=>void) => void
   getStore: (name:string, key?:string) => Store | null

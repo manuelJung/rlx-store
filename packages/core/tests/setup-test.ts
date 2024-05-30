@@ -7,6 +7,9 @@ type Config = {
 }
 
 export default function setupTest (config:Config={}) {
+  //@ts-ignore
+  global.window = {};
+
   let mountFnRef = {
     current: () => {}
   }
@@ -15,7 +18,6 @@ export default function setupTest (config:Config={}) {
   }
   const createStore = factory({
     injectFramework: store => store,
-    getInstanceId: () => config.instanceId ?? '',
     onDestroy: cb => {
       destroyFnRef.current = () => cb()
     },
@@ -48,7 +50,7 @@ export default function setupTest (config:Config={}) {
         actions: {},
         state: null,
         ...storeConfig,
-      }) as ReturnType<typeof createStore> & Record<string, (...args:any[]) => any>
+      }) as ReturnType<typeof createStore>
 
       if(!config.preventAutoMount) mountFnRef.current()
 

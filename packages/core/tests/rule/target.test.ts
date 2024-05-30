@@ -19,7 +19,7 @@ describe('rule -> target', () => {
       consequence,
     })
 
-    store.action1()
+    store.actions.action1()
 
     expect(consequence).toBeCalled()
   })
@@ -43,10 +43,10 @@ describe('rule -> target', () => {
       consequence,
     })
 
-    store.action1()
+    store.actions.action1()
     expect(consequence).toBeCalledTimes(1)
 
-    store.action2()
+    store.actions.action2()
     expect(consequence).toBeCalledTimes(2)
   })
 
@@ -68,7 +68,7 @@ describe('rule -> target', () => {
       consequence,
     })
 
-    store.action1()
+    store.actions.action1()
 
     expect(consequence).toBeCalled()
   })

@@ -1,32 +1,53 @@
-import { KeysMatch } from "./utils/utils";
+import { KeysAreEqual } from "./utils/utils";
 import {
   Store as TypesStore,
-  ConsequenceArgs as TypesConsequenceArgs,
+  CommonRuleArgs as TypesConsequenceArgs,
   StoreConfig as TypesStoreConfig,
+  Rule as TypesRule,
+  AsyncActionConfig as TypesAsyncActionConfig,
+  ConditionArgs as TypesConditionArgs,
 } from "../src/types";
 import {
   Store as CoreStore,
   ConsequenceArgs as CoreConsequenceArgs,
   StoreConfig as CoreStoreConfig,
+  Rule as CoreRule,
+  AsyncActionConfig as CoreAsyncActionConfig,
+  ConditionArgs as CoreConditionArgs,
 } from "../../core/src/types";
 
-type StoreMatches = KeysMatch<TypesStore<any, any>, CoreStore> &
-  KeysMatch<CoreStore, TypesStore<any, any>>;
+type StoreMatches = KeysAreEqual<TypesStore<any, any>, CoreStore>;
 // ts-expects-no-error: as both types have the same keys
 const storeMatches: StoreMatches = true;
 
-type StoreConfigMatches = KeysMatch<
+type StoreConfigMatches = KeysAreEqual<
   TypesStoreConfig<any, any, any>,
   CoreStoreConfig
-> &
-  KeysMatch<CoreStoreConfig, TypesStoreConfig<any, any, any>>;
+>;
 // ts-expects-no-error: as both types have the same keys
 const storeConfigMatches: StoreConfigMatches = true;
 
-type ConsequenceArgsMatches = KeysMatch<
-  TypesConsequenceArgs<any, any, any>,
+type ConsequenceArgsMatches = KeysAreEqual<
+  TypesConsequenceArgs<any, any>,
   CoreConsequenceArgs
-> &
-  KeysMatch<CoreConsequenceArgs, TypesConsequenceArgs<any, any, any>>;
+>;
 // ts-expects-no-error: as both types have the same keys
 const consequenceArgsMatches: ConsequenceArgsMatches = true;
+
+type RuleMatches = KeysAreEqual<TypesRule<any, any, any>, CoreRule>;
+// ts-expects-no-error: as both types have the same keys
+const ruleMatches: RuleMatches = true;
+
+type AsyncActionConfigMatches = KeysAreEqual<
+  TypesAsyncActionConfig<any>,
+  CoreAsyncActionConfig
+>;
+// ts-expects-no-error: as both types have the same keys
+const asyncActionConfigMatches: AsyncActionConfigMatches = true;
+
+type ConditionArgsMatches = KeysAreEqual<
+  TypesConditionArgs<any, any>,
+  CoreConditionArgs
+>;
+// ts-expects-no-error: as both types have the same keys
+const conditionArgsMatches: ConditionArgsMatches = true;

@@ -22,7 +22,7 @@ describe('rule -> condition', () => {
         consequence: () => null
       })
 
-      store.myAction('id')
+      store.actions.myAction('id')
 
       expect(action).toEqual({
         type: 'test/myAction',
@@ -50,7 +50,7 @@ describe('rule -> condition', () => {
         consequence: () => null
       })
   
-      store.myAction('id')
+      store.actions.myAction('id')
   
       expect(consequenceStore).toBe(store)
     })
@@ -76,7 +76,7 @@ describe('rule -> condition', () => {
         consequence: () => null,
       })
 
-      store.myAction('id')
+      store.actions.myAction('id')
 
       expect(consequenceStoreFound).toEqual({
         ...store,
@@ -107,7 +107,7 @@ describe('rule -> condition', () => {
         consequence: () => null
       })
 
-      store.myAction('id')
+      store.actions.myAction('id')
 
       expect(consequenceStoreFound).toEqual([{
         ...store,
@@ -135,7 +135,7 @@ describe('rule -> condition', () => {
       consequence: consequence,
     })
 
-    store.myAction('foo')
+    store.actions.myAction('foo')
     expect(consequence).not.toBeCalledWith(expect.objectContaining({
       action: {
         type: 'test/myAction',
@@ -145,7 +145,7 @@ describe('rule -> condition', () => {
     }))
 
     run = true
-    store.myAction('foo')
+    store.actions.myAction('foo')
     expect(consequence).toBeCalledWith(expect.objectContaining({
       action: {
         type: 'test/myAction',

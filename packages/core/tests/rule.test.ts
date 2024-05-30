@@ -19,7 +19,7 @@ describe('rule', () => {
       consequence: consequence,
     })
 
-    store.myAction('foo')
+    store.actions.myAction('foo')
     expect(consequence).not.toBeCalledWith(expect.objectContaining({
       action: {
         type: 'test/myAction',
@@ -29,7 +29,7 @@ describe('rule', () => {
     }))
 
     run = true
-    store.myAction('foo')
+    store.actions.myAction('foo')
     expect(consequence).toBeCalledWith(expect.objectContaining({
       action: {
         type: 'test/myAction',

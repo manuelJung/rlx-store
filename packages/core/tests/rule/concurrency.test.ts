@@ -20,12 +20,12 @@ describe('rule -> concurrency', () => {
       concurrency: 'FIRST',
       consequence: async({store, action}) => {
         await wait(10)
-        store.otherAction(action.payload)
+        store.actions.otherAction(action.payload)
       },
     })
 
-    store.myAction('first')
-    store.myAction('second')
+    store.actions.myAction('first')
+    store.actions.myAction('second')
     await wait(20)
 
     expect(store.getState()).toEqual(['first'])
@@ -48,15 +48,15 @@ describe('rule -> concurrency', () => {
       concurrency: 'LAST',
       consequence: async({store, action}) => {
         await wait(10)
-        store.otherAction(action.payload)
+        store.actions.otherAction(action.payload)
       },
     })
 
-    store.myAction('first')
-    store.myAction('second')
+    store.actions.myAction('first')
+    store.actions.myAction('second')
     await wait(20)
-    store.myAction('third')
-    store.myAction('fourth')
+    store.actions.myAction('third')
+    store.actions.myAction('fourth')
     await wait(20)
 
     expect(store.getState()).toEqual(['second', 'fourth'])
@@ -78,15 +78,15 @@ describe('rule -> concurrency', () => {
       target: 'test/myAction',
       concurrency: 'ONCE',
       consequence: ({store, action}) => {
-        store.otherAction(action.payload)
+        store.actions.otherAction(action.payload)
       },
     })
 
-    store.myAction('first')
-    store.myAction('second')
+    store.actions.myAction('first')
+    store.actions.myAction('second')
     await wait(10)
-    store.myAction('third')
-    store.myAction('fourth')
+    store.actions.myAction('third')
+    store.actions.myAction('fourth')
 
     expect(store.getState()).toEqual(['first'])
   })
@@ -108,14 +108,14 @@ describe('rule -> concurrency', () => {
       concurrency: 'SWITCH',
       consequence: async ({store, action}) => {
         await wait(action.meta[1])
-        store.otherAction(action.payload)
+        store.actions.otherAction(action.payload)
       },
     })
 
-    store.myAction('first', 20)
-    store.myAction('second', 10)
-    store.myAction('third', 30)
-    store.myAction('fourth', 40)
+    store.actions.myAction('first', 20)
+    store.actions.myAction('second', 10)
+    store.actions.myAction('third', 30)
+    store.actions.myAction('fourth', 40)
 
     await wait(50)
 

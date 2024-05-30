@@ -16,11 +16,11 @@ const createCompositeStore = <
     state: {},
   });
 
-  store.addRule({ target: "/sampleAction" });
+  store.addRule({ target: "/sampleAction", id: "" });
   //@ts-expect-error: as a non existing action is not valid
-  store.addRule({ target: "/notAnAction" });
+  store.addRule({ target: "/notAnAction", id: "" });
   //@ts-expect-error: as / is not an valid operator
-  store.addRule({ target: "/" });
+  store.addRule({ target: "/", id: "" });
 
   return store;
 };
