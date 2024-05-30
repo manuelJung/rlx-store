@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"@rlx/core": "*",
-    "@rlx/types": "*"
+    	"@rlx/types": "*"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",

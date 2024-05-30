@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "esbuild src/index.ts --bundle --platform=neutral --outdir=dist && tsc",
-    "test": "jest --watch",
+    "test": "jest",
     "type-check": "tsc",
     "size": "size-limit"
   },
