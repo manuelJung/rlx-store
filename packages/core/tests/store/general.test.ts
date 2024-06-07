@@ -28,5 +28,30 @@ describe('store -> general', () => {
     expect(c.managers.store.db.has('my-name')).toBeFalsy()
   })
 
+  it('store.subscribe only triggers when the last action is dispatched', async () => {
+    const c = setupTest()
+
+    const store = c.createStore({
+      name: 'test',
+      state: 'initial',
+      actions: {
+        action1: () => () => 'action1',
+        action2: () => () => 'action2',
+        action3: () => () => 'action3',
+      }
+    })
+
+    store.addRule({id: 'rule1', target: '/action1', consequence: ({store}) => store.actions.action2()})
+    store.addRule({id: 'rule1', target: '/action2', consequence: ({store}) => store.actions.action3()})
+
+    const callback = jest.fn()
+    store.subscribe(callback)
+
+    store.actions.action1()
+
+    expect(callback).toHaveBeenCalledTimes(1)
+    expect(callback).toHaveBeenLastCalledWith('action3')
+  })
+
   it.todo('will no dispatch @destroy when at least one store reference is active')
 })

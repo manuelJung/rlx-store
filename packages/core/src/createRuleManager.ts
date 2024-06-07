@@ -11,6 +11,9 @@ export default function createRuleManager (args:t.FactoryArgs, managers:t.Manage
     AFTER: {},
   }
 
+  // variable to track calls
+  let nCalls = 0;
+
   return {
     db,
     activeRules,
@@ -34,7 +37,14 @@ export default function createRuleManager (args:t.FactoryArgs, managers:t.Manage
       cb:()=>void, 
     }
     ) => {
-      return dispatchEvent(args.action, activeRules, args.cb, args.storeContainer, args.storeDb)
+      nCalls++ 
+      const result = dispatchEvent(args.action, activeRules, args.cb, args.storeContainer, args.storeDb)
+      nCalls--
+      if (nCalls === 0) {
+        // add cache implementation
+        // invalidate cache || trigger subscription
+      }
+      return result
     }
   }
 }
