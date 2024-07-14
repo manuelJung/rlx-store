@@ -33,7 +33,7 @@ const createStore = createStoreFactory({
   onDestroy: onDestroy,
 }) as any as <
   Name extends string,
-  State extends Record<string, unknown>,
+  State extends Record<string, unknown> | any,
   Action extends ActionsType<State>,
 >(
   cfg: StoreConfig<Name, State, Action>
